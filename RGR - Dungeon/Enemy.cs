@@ -57,7 +57,7 @@ namespace RGR___Dungeon
             name = "Тёмный Рыцарь(не Бэтмен)";
             maxhealth = 100;
             Health = maxhealth;
-            exp = 25;
+            exp = 30;
 
             attacks.Add(new Attack(15, 90, false, "Удар"));
             attacks.Add(new Attack(0, 100, true, "Исцеление"));
@@ -92,6 +92,20 @@ namespace RGR___Dungeon
             attacks.Add(new Attack(20, 80, true, "Поглощение энергии"));
             attacks.Add(new Attack(30, 70, false, "Крик"));
             attacks.Add(new Attack(5, 100, false, "Удар"));
+        }
+    }
+    class SkeletonArcher : Enemy
+    {
+        public SkeletonArcher()
+        {
+            name = "Скелет лучник";
+            maxhealth = 75;
+            Health = maxhealth;
+            exp = 25;
+
+            attacks.Add(new Attack(15, 75, false, "Выстрел"));
+            attacks.Add(new Attack(25, 60, false, "Заряженный выстрел"));
+            attacks.Add(new Attack(10, 90, false, "Удар луком"));
         }
     }
     //TODO: NEW MONSTERS
