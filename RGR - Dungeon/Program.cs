@@ -12,8 +12,7 @@ namespace RGR___Dungeon
         {
             Console.Clear();
             Player player = new Player();
-            List<string> score = new List<string>();
-            score = LoadScore();
+            List<string> score = LoadScore();
             try
             {
                 Console.WriteLine("Введите номер действия:\n 1 - Новая игра \n 2 - Загрузить игру \n 3 - Доска Почёта \n 4 - Выход");
@@ -46,6 +45,7 @@ namespace RGR___Dungeon
             {
                 Console.Clear();
                 player.CheckLevelUp();
+                DifficultyChange(player);
                 Console.Clear();
                 Console.WriteLine(string.Format("Здоровье: {0}, Монеты: {1}, Зелья здоровья: {2}, Очков опыта: {3}",
                                                 player.Health,
@@ -123,13 +123,22 @@ namespace RGR___Dungeon
             else
             {
                 Random random = new Random();
-                int money = random.Next(50);
+                int money = random.Next(10*Enemy.difficulty, 50*Enemy.difficulty);
                 player.score += money;
                 player.TakePotions(1);
                 Console.WriteLine("Вы нашли немного монет и зелье здоровья");
                 Console.WriteLine(string.Format("(+ {0} монет, + зелье здоровья)", money));
                 Console.ReadKey();
             }
+        }
+
+        static void DifficultyChange(Player player)
+        {
+            if(player.GetLevel() > 4*Enemy.difficulty)
+            Enemy.difficulty += 1;
+            Console.Clear();
+            Console.WriteLine("Вы нашли дверь, ведущую на более глубокий уровень подземелья.\n"
+                              + "Враги станут сильнее, но и награда больше.");
         }
         #endregion
 

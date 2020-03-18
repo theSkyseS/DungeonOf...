@@ -22,10 +22,10 @@ namespace RGR___Dungeon
         public Player()
         {
             name = "Игрок";
-            attacks.Add(new Attack(15, 85, false, "удар по торсу"));
-            attacks.Add(new Attack(20, 55, false, "удар по голове"));
-            attacks.Add(new Attack(6, 95, false, "удар по рукам"));
-            attacks.Add(new Attack(5, 100, false, "удар по ногам"));
+            attacks.Add(new Attack(25, 85, false, "удар по торсу"));
+            attacks.Add(new Attack(30, 55, false, "удар по голове"));
+            attacks.Add(new Attack(16, 95, false, "удар по рукам"));
+            attacks.Add(new Attack(15, 100, false, "удар по ногам"));
             attacks.Add(new Attack(0, 100, true, "лечение"));
             level = 1;
             maxhealth = 100;
@@ -62,19 +62,19 @@ namespace RGR___Dungeon
                                       + "Выберите характеристику для улучшения: 1 - Здоровье, 2 - Сила");
                     int i = int.Parse(Console.ReadLine());
                     expirience -= expToNextLevel;
+                    level += 1;
                     expToNextLevel += 5 + (int)Math.Pow(2, level);
                     switch(i)
                     {
                         case 1: maxhealth += 10;
                             Health += 10;
                             break;
-                        case 2: strength += 1;
-                            foreach (Attack attack in attacks)
-                            {
-                                if (!attack.special)
-                                    attack.damage += strength * 2;
-                            }
-                            break;
+                        case 2: strength += 1; 
+                            foreach(Attack attack in attacks)
+                    {
+                        if(!attack.special)
+                        attack.damage += strength * 2;
+                    }break;
                         default: maxhealth += 10;
                             Health += 10;
                             break;
@@ -86,12 +86,20 @@ namespace RGR___Dungeon
                     CheckLevelUp();
                 }
         }
+        public int GetLevel()
+        {
+            return level;
+        }
         protected override void TakeDamage(int dmg, Attack attack) => Health -= dmg;
         public void TakePotions(int value) => this.healthPotions += value;
         private void UsePotion()
         {
-            this.healthPotions -= 1;
-            Heal(20);
+            if (healthPotions > 0)
+            {
+                this.healthPotions -= 1;
+                Heal(40);
+            }
+            else Console.WriteLine("У Вас нет зелий");
         }
         #endregion
     }
