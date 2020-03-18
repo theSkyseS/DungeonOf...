@@ -1,5 +1,4 @@
-﻿using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace RGR___Dungeon
@@ -8,7 +7,6 @@ namespace RGR___Dungeon
     {
         #region fields
         public int score;
-        public int maxhealth;
         public int healthPotions;
         public int expirience;
         public int strength;
@@ -30,12 +28,12 @@ namespace RGR___Dungeon
             attacks.Add(new Attack(5, 100, false, "удар по ногам"));
             attacks.Add(new Attack(0, 100, true, "лечение"));
             level = 1;
-            health = 100;
             maxhealth = 100;
+            Health = 100;
             healthPotions = 2;
             score = 0;
             expirience = 0;
-            strength = 1;
+            strength = 0;
             expToNextLevel = 10;
         }
         public override void InflictAttack(Character attacked)
@@ -55,45 +53,46 @@ namespace RGR___Dungeon
             }
             
         }
-        public void levelUp()
+        public void CheckLevelUp()
         {
-            try
-            {
-                Console.WriteLine("Выберите характеристику для улучшения: 1 - Здоровье, 2 - Сила");
-                int i = int.Parse(Console.ReadLine());
-                expToNextLevel += 5 + (int)Math.Pow(2, level);
-                expirience = 0;
-                switch(i)
+            while(expirience >= expToNextLevel)
+                try
                 {
-                    case 1: maxhealth += 10;
-                        health += 10;
-                        break;
-                    case 2: strength += 1; break;
-                    default: maxhealth += 10;
-                        health += 10;
-                        break;
+                    Console.WriteLine("Новый уровень! \n"
+                                      + "Выберите характеристику для улучшения: 1 - Здоровье, 2 - Сила");
+                    int i = int.Parse(Console.ReadLine());
+                    expirience -= expToNextLevel;
+                    expToNextLevel += 5 + (int)Math.Pow(2, level);
+                    switch(i)
+                    {
+                        case 1: maxhealth += 10;
+                            Health += 10;
+                            break;
+                        case 2: strength += 1;
+                            foreach (Attack attack in attacks)
+                            {
+                                if (!attack.special)
+                                    attack.damage += strength * 2;
+                            }
+                            break;
+                        default: maxhealth += 10;
+                            Health += 10;
+                            break;
+                    }
+                    
                 }
-                foreach(Attack attack in attacks)
+                catch(Exception)
                 {
-                    attack.damage += strength * 2;
+                    CheckLevelUp();
                 }
-            }
-            catch(Exception)
-            {
-                levelUp();
-            }
         }
-        protected override void TakeDamage(int dmg, Attack attack) => health -= dmg;
+        protected override void TakeDamage(int dmg, Attack attack) => Health -= dmg;
         public void TakePotions(int value) => this.healthPotions += value;
         private void UsePotion()
         {
             this.healthPotions -= 1;
-            if (maxhealth - health >= 20)
-                Heal(20);
-            else
-                Heal(maxhealth - health);
+            Heal(20);
         }
         #endregion
-
     }
 }

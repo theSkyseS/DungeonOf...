@@ -11,6 +11,7 @@ namespace RGR___Dungeon
 
         #region Fields
         protected List<string> weakSpots = new List<string>();
+        public int exp;
         #endregion
 
         #region Methods
@@ -19,10 +20,10 @@ namespace RGR___Dungeon
             if (weakSpots.Contains(attack.name))
             {
                 dmg *= 2;
-                Console.WriteLine("Крит! Вы нанесли двойной урон");
+                Console.WriteLine("Вы попали в уязвимое место! Нанесён двойной урон");
             }
 
-            health -= dmg;
+            Health -= dmg;
         }
         public override void InflictAttack(Character attacked)
         {
@@ -39,10 +40,13 @@ namespace RGR___Dungeon
     {
         public Rat()
         {
+            name = "Крыса";
+            maxhealth = 15;
+            Health = maxhealth;
+            exp = 5;
+
             attacks.Add(new Attack(5, 80, false, "Укус"));
             attacks.Add(new Attack(10, 50, false, "Сильный укус"));
-            health = 15;
-            name = "Крыса";
             weakSpots.Add("удар по голове");
         }
     }
@@ -51,7 +55,10 @@ namespace RGR___Dungeon
         public DarkKnight()
         {
             name = "Тёмный Рыцарь(не Бэтмен)";
-            health = 100;
+            maxhealth = 100;
+            Health = maxhealth;
+            exp = 25;
+
             attacks.Add(new Attack(15, 90, false, "Удар"));
             attacks.Add(new Attack(0, 100, true, "Исцеление"));
             attacks.Add(new Attack(20, 75, false, "Сильный удар"));
@@ -59,7 +66,34 @@ namespace RGR___Dungeon
             weakSpots.Add("удар по рукам");
         }
     }
-    
+    class SlimeMonster : Enemy
+    {
+        public SlimeMonster()
+        {
+            name = "Слизень";
+            maxhealth = 50;
+            Health = maxhealth;
+            exp = 15;
+
+            attacks.Add(new Attack(10, 95, false, "Плевок слизью"));
+            attacks.Add(new Attack(15, 80, false, "Удар"));
+            weakSpots.Add("удар по торсу");
+        }
+    }
+    class VengefulSpirit : Enemy
+    {
+        public VengefulSpirit()
+        {
+            name = "Дух мщения";
+            maxhealth = 150;
+            Health = maxhealth;
+            exp = 50;
+
+            attacks.Add(new Attack(20, 80, true, "Поглощение энергии"));
+            attacks.Add(new Attack(30, 70, false, "Крик"));
+            attacks.Add(new Attack(5, 100, false, "Удар"));
+        }
+    }
     //TODO: NEW MONSTERS
     #endregion
 }

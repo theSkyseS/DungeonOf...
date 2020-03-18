@@ -34,17 +34,34 @@ namespace RGR___Dungeon
 
         #region fields
         protected List<Attack> attacks = new List<Attack>();
-        public int health;
+        protected int maxhealth;
+        private int health;
         public string name;
+        public int Health
+        {
+            get => health;
+            set
+            {
+                if (value <= maxhealth)
+                {
+                    health = value;
+                }
+                else
+                {
+                    health = maxhealth;
+                }
+            }
+        }
         #endregion
 
         #region Properties
         #endregion
 
         #region Methods
-        public void Heal(int value) => health += value;
+        public void Heal(int value) => Health += value;
         protected abstract void TakeDamage(int dmg, Attack attack);
         public abstract void InflictAttack(Character attacked);
         #endregion
     }
 }
+
