@@ -149,10 +149,14 @@ namespace RGR___Dungeon
         static Enemy GenerateEnemy()
         {
             Random rnd = new Random();
-            switch (rnd.Next(3))
+            switch (rnd.Next(6))
             {
                 case 0: return new Rat();
                 case 1: return new DarkKnight();
+                case 2: return new SlimeMonster();
+                case 3: return new Zombie();
+                case 4: return new SkeletonArcher();
+                case 5: return new VengefulSpirit();
                 //case 2: return new BFM();
                 default: return new Rat();
             }

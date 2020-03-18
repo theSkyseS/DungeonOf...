@@ -92,6 +92,7 @@ namespace RGR___Dungeon
             attacks.Add(new Attack(20, 80, true, "Поглощение энергии"));
             attacks.Add(new Attack(30, 70, false, "Крик"));
             attacks.Add(new Attack(5, 100, false, "Удар"));
+            weakSpots.Add("удар по торсу");
         }
     }
     class SkeletonArcher : Enemy
@@ -106,6 +107,25 @@ namespace RGR___Dungeon
             attacks.Add(new Attack(15, 75, false, "Выстрел"));
             attacks.Add(new Attack(25, 60, false, "Заряженный выстрел"));
             attacks.Add(new Attack(10, 90, false, "Удар луком"));
+            weakSpots.Add("удар по рукам");
+            weakSpots.Add("удар по ногам");
+        }
+    }
+    
+    class Zombie : Enemy
+    {
+        public Zombie()
+        {
+            name = "Зомби";
+            maxhealth = 100;
+            Health = maxhealth;
+            exp = 25;
+
+            attacks.Add(new Attack(15, 90, false, "Удар"));
+            attacks.Add(new Attack(25, 50, false, "Укус"));
+            attacks.Add(new Attack(5, 95, false, "Слабый удар"));
+            weakSpots.Add("удар по рукам");
+            weakSpots.Add("удар по ногам");
         }
     }
     //TODO: NEW MONSTERS
