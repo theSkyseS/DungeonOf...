@@ -10,6 +10,11 @@ namespace RGR___Dungeon
         #region MainMethods
         static void Main()
         {
+            startMusic();
+            GameMethod();
+        }
+        private static void GameMethod()
+        {
             Console.Clear();
             Player player = new Player();
             List<string> score = LoadScore();
@@ -31,14 +36,16 @@ namespace RGR___Dungeon
                     case 4: return;
                     default: return;
                 }
-                Main();
+                GameMethod();
             }
             catch (Exception)
             {
                 Console.WriteLine("Некорректный ввод");
-                Main();
+                Console.ReadKey();
+                GameMethod();
             }
         }
+
         static void GameCycle(Player player, List<string> score)
         {
             do
@@ -81,7 +88,7 @@ namespace RGR___Dungeon
                 }
             } while (player.Health > 0);
             SaveScore(score);
-            Main();
+            GameMethod();
         }
         static void Round(bool door, Player player, List<string> score)
         {
@@ -115,26 +122,31 @@ namespace RGR___Dungeon
                     Console.WriteLine(string.Format("Вы одержали победу над {0} \n "
                                                     + "Получено опыта: {1}",
                                                     enemy.name,
-                                                    enemy.exp));
-                    player.expirience += enemy.exp;  
+                                                    enemy.Exp));
+                    Console.WriteLine();
+                    Console.WriteLine(string.Format("( Вы нашли {0} монет)", GenerateGold(player)));
+                    player.expirience += enemy.Exp;
+                    Random random = new Random();
+                    if (random.Next(101) < 25)
+                    {
+                        Weapon weapon = GenerateWeapon();
+                        player.TakeNewWeapon(weapon);
+                    }
                 }
                 Console.ReadKey();
             }
             else
             {
-                Random random = new Random();
-                int money = random.Next(10*Enemy.difficulty, 50*Enemy.difficulty);
-                player.score += money;
                 player.TakePotions(1);
                 Console.WriteLine("Вы нашли немного монет и зелье здоровья");
-                Console.WriteLine(string.Format("(+ {0} монет, + зелье здоровья)", money));
+                Console.WriteLine(string.Format("(+ {0} монет, + зелье здоровья)", GenerateGold(player)));
                 Console.ReadKey();
             }
         }
 
         static void DifficultyChange(Player player)
         {
-            if(player.GetLevel() > 4*Enemy.difficulty)
+            if(player.Level > 4*Enemy.difficulty)
             Enemy.difficulty += 1;
             Console.Clear();
             Console.WriteLine("Вы нашли дверь, ведущую на более глубокий уровень подземелья.\n"
@@ -166,9 +178,35 @@ namespace RGR___Dungeon
                 case 3: return new Zombie();
                 case 4: return new SkeletonArcher();
                 case 5: return new VengefulSpirit();
-                //case 2: return new BFM();
                 default: return new Rat();
             }
+        }
+
+        static Weapon GenerateWeapon()
+        {
+            Random random = new Random();
+            switch (random.Next(1,6))
+            {
+                case 1:
+                    return new Shortsword();
+                case 2:
+                    return new Sword();
+                case 3:
+                    return new Longbow();
+                case 4:
+                    return new Magicstaff();
+                case 5:
+                    return new Acidstaff();
+                default:
+                    return new Shortsword();
+            }
+        }
+        static int GenerateGold(Player player)
+        {
+            Random random = new Random();
+            int money = random.Next(10 * Enemy.difficulty, 50 * Enemy.difficulty);
+            player.score += money;
+            return money;
         }
         #endregion
 
@@ -206,6 +244,7 @@ namespace RGR___Dungeon
                 }
                 sr.Close();
                 sr.Dispose();
+                score.Sort();
                 return score;
             }
         }
@@ -228,6 +267,16 @@ namespace RGR___Dungeon
         static void WriteScoreBoard(List<string> score)
         {
             for (int i = 0; i < score.Count; i++) Console.WriteLine(score[i]);
+        }
+        #endregion
+
+        #region Music System
+        static void startMusic()
+        {
+            WMPLib.WindowsMediaPlayer WMP = new WMPLib.WindowsMediaPlayer();
+            WMP.URL = @"09 Fields of Verdun (Soundtrack Version).mp3";
+            WMP.settings.volume = 25;
+            WMP.controls.play();
         }
         #endregion
     }
