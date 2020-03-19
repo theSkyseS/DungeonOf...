@@ -27,13 +27,14 @@ namespace RGR___Dungeon
                     case 1:
                         Console.WriteLine("Введите имя персонажа");
                         player.name = Console.ReadLine();
-                        GameCycle(player, score); break;
-                    case 2: GameCycle(LoadGame(), score); break;
+                        GameCycle(player, score); 
+                        break;
+                    case 2: GameCycle(LoadGame(), score); 
+                        break;
                     case 3:
                         WriteScoreBoard(score);
                         Console.ReadKey();
-                        break;
-                    case 4: return;
+                        break; 
                     default: return;
                 }
                 GameMethod();
@@ -54,11 +55,12 @@ namespace RGR___Dungeon
                 player.CheckLevelUp();
                 DifficultyChange(player);
                 Console.Clear();
-                Console.WriteLine(string.Format("Здоровье: {0}, Монеты: {1}, Зелья здоровья: {2}, Очков опыта: {3}",
+                Console.WriteLine(string.Format("Здоровье: {0}, Броня: {4}, Монеты: {1}, Зелья здоровья: {2}, Очков опыта: {3}",
                                                 player.Health,
                                                 player.score,
                                                 player.healthPotions,
-                                                player.expirience));
+                                                player.expirience,
+                                                player.Armor));
                 bool door = GenerateDoor();
                 Console.WriteLine("Введите число: \n "
                                   + "1 или 2 - выбрать дверь \n "
@@ -88,7 +90,6 @@ namespace RGR___Dungeon
                 }
             } while (player.Health > 0);
             SaveScore(score);
-            GameMethod();
         }
         static void Round(bool door, Player player, List<string> score)
         {
@@ -100,31 +101,33 @@ namespace RGR___Dungeon
                 while (player.Health > 0 && enemy.Health > 0)
                 {
                     Console.Clear();
-                    Console.WriteLine(string.Format("Здоровье: {0}, Монеты: {1}, Зелья здоровья: {2}",
+                    Console.WriteLine(string.Format("Здоровье: {0}, Броня {3}, Монеты: {1}, Зелья здоровья: {2}",
                                                     player.Health,
                                                     player.score,
-                                                    player.healthPotions));
+                                                    player.healthPotions,
+                                                    player.Armor));
                     Console.WriteLine(string.Format("Враг: {0}, Здоровье врага: {1}",
                                                     enemy.name,
                                                     enemy.Health));
                     player.InflictAttack(enemy);
+                    player.DamageWeapon();
                     enemy.InflictAttack(player);
                     Console.ReadKey();
                 }
 
                 if (player.Health <= 0)
                 {
-                    Console.WriteLine(string.Format("Поражение! =( Ваш счёт: {0}", player.score));
+                    Console.WriteLine(string.Format("Поражение! =( Ваш счёт: {0}.", player.score));
                     AddToScoreboard(score, player);
                 }
                 else
                 {
                     Console.WriteLine(string.Format("Вы одержали победу над {0} \n "
-                                                    + "Получено опыта: {1}",
+                                                    + "Получено опыта: {1}.",
                                                     enemy.name,
                                                     enemy.Exp));
                     Console.WriteLine();
-                    Console.WriteLine(string.Format("( Вы нашли {0} монет)", GenerateGold(player)));
+                    Console.WriteLine(string.Format("Вы нашли {0} монет.", GenerateGold(player)));
                     player.expirience += enemy.Exp;
                     Random random = new Random();
                     if (random.Next(101) < 25)
@@ -132,11 +135,24 @@ namespace RGR___Dungeon
                         Weapon weapon = GenerateWeapon();
                         player.TakeNewWeapon(weapon);
                     }
+                    if (random.Next(101) < 20)
+                    {
+                        Console.WriteLine("Вы нашли части брони \n"
+                                          + "Броня + 15");
+                        player.Armor += 15;
+                    }
                 }
                 Console.ReadKey();
             }
             else
             {
+                Random random = new Random();
+                if (random.Next(101) < 20)
+                {
+                    Console.WriteLine("Вы нашли части брони \n"
+                                      + "Броня + 15");
+                    player.Armor += 15;
+                }
                 player.TakePotions(1);
                 Console.WriteLine("Вы нашли немного монет и зелье здоровья");
                 Console.WriteLine(string.Format("(+ {0} монет, + зелье здоровья)", GenerateGold(player)));
@@ -146,11 +162,14 @@ namespace RGR___Dungeon
 
         static void DifficultyChange(Player player)
         {
-            if(player.Level > 4*Enemy.difficulty)
-            Enemy.difficulty += 1;
-            Console.Clear();
-            Console.WriteLine("Вы нашли дверь, ведущую на более глубокий уровень подземелья.\n"
-                              + "Враги станут сильнее, но и награда больше.");
+            if (player.Level > 4 * Enemy.difficulty)
+            {
+                Enemy.difficulty += 1;
+                Console.Clear();
+                Console.WriteLine("Вы нашли дверь, ведущую на более глубокий уровень подземелья.\n"
+                                  + "Враги станут сильнее, но и награда больше.");
+                Console.ReadKey();
+            }
         }
         #endregion
 
@@ -275,7 +294,7 @@ namespace RGR___Dungeon
         {
             WMPLib.WindowsMediaPlayer WMP = new WMPLib.WindowsMediaPlayer();
             WMP.URL = @"09 Fields of Verdun (Soundtrack Version).mp3";
-            WMP.settings.volume = 25;
+            WMP.settings.volume = 5;
             WMP.controls.play();
         }
         #endregion

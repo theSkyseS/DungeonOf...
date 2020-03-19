@@ -14,7 +14,7 @@ namespace RGR___Dungeon
         protected string weaponName;
 
         public int Damage { get => damage;}
-        public int Durability { get => durability;}
+        public int Durability { get => durability; set => durability = value; }
         internal AttackType AttackType { get => attackType;}
         public string WeaponName { get => weaponName;}
     }
@@ -24,7 +24,7 @@ namespace RGR___Dungeon
         {
             weaponName = "короткий меч";
             damage = 5;
-            durability = 20;
+            durability = 25;
             attackType = AttackType.physical;
         }
     }
@@ -34,7 +34,7 @@ namespace RGR___Dungeon
         {
             weaponName = "меч";
             damage = 10;
-            durability = 30;
+            durability = 35;
             attackType = AttackType.physical;
         }
     }
@@ -44,7 +44,7 @@ namespace RGR___Dungeon
         {
             weaponName = "длинный лук";
             damage = 7;
-            durability = 20;
+            durability = 25;
             attackType = AttackType.ranged;
         }
     }
@@ -64,7 +64,7 @@ namespace RGR___Dungeon
         {
             weaponName = "посох яда";
             damage = 10;
-            durability = 20;
+            durability = 25;
             attackType = AttackType.poison;
         }
     }

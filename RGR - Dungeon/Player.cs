@@ -9,23 +9,39 @@ namespace RGR___Dungeon
         public int score;
         public int healthPotions;
         public int expirience;
+        private int armor;
         private int strength;
-        private Weapon currentWeapon;
         private int expToNextLevel;
         private int level;
+        private Weapon currentWeapon;
         #endregion
 
         #region Properties
         public int Level => level;
+
+        public int Armor
+        {
+            get => armor; 
+            set
+            {
+                if (value > 0)
+                    armor = value;
+                else
+                {
+                    Health += (armor + value);
+                    armor = 0;
+                }
+            }
+        }
         #endregion
 
         public Player()
         {
             name = "Игрок";
-            attacks.Add(new Attack(25, 85, false, "удар по торсу"));
-            attacks.Add(new Attack(30, 55, false, "удар по голове"));
-            attacks.Add(new Attack(16, 95, false, "удар по рукам"));
-            attacks.Add(new Attack(15, 100, false, "удар по ногам"));
+            attacks.Add(new Attack(25, 85, false, "удар по торсу", AttackType.physical));
+            attacks.Add(new Attack(30, 55, false, "удар по голове", AttackType.physical));
+            attacks.Add(new Attack(16, 95, false, "удар по рукам", AttackType.physical));
+            attacks.Add(new Attack(15, 100, false, "удар по ногам", AttackType.physical));
             attacks.Add(new Attack(0, 100, true, "лечение"));
             level = 1;
             maxhealth = 100;
@@ -34,11 +50,21 @@ namespace RGR___Dungeon
             score = 0;
             expirience = 0;
             strength = 0;
+            Armor = 0;
             expToNextLevel = 10;
+            weaknessType = AttackType.nothing;
         }
-        
+
         #region methods
-        protected override void TakeDamage(int dmg, Attack attack) => Health -= dmg;
+        protected override void TakeDamage(int dmg, Attack attack)
+        {
+            if(Armor > 0)
+            {
+                Armor -= dmg; 
+            }
+            else
+                Health -= dmg;
+        }
 
         private void UsePotion()
         {
@@ -149,6 +175,19 @@ namespace RGR___Dungeon
             }
         }
         public void TakePotions(int value) => this.healthPotions += value;
+        public void DamageWeapon()
+        {
+            if (currentWeapon != null)
+            {
+                currentWeapon.Durability -= 1;
+                if (currentWeapon.Durability <= 0)
+                {
+                    Console.WriteLine("Ваше оружие сломалось, Вам стоит поискать себе другое");
+                    currentWeapon = null;
+                    RegenerateAttacks();
+                }
+            }
+        }
         #endregion
     }
 }

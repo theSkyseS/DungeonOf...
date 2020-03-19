@@ -18,9 +18,13 @@ namespace RGR___Dungeon
             private AttackType type;
             private int baseDamage;
             #endregion
-            public Attack(int dmg, int chance, bool spec, string Name, AttackType Type = AttackType.physical)
+            public Attack(int dmg, int chance, bool spec, string Name, AttackType Type)
             {
                 damage = dmg; successChance = chance; special = spec; name = Name; type = Type; baseDamage = dmg;
+            }
+            public Attack(int dmg, int chance, bool spec, string Name)
+            {
+                damage = dmg; successChance = chance; special = spec; name = Name; type = AttackType.physical; baseDamage = dmg;
             }
 
             #region propeties
@@ -39,20 +43,20 @@ namespace RGR___Dungeon
                 int i = rnd.Next(1, 100);
                 if (i <= SuccessChance)
                 {
+                    Console.WriteLine(string.Format("{0} успешно использовал приём {1}", attacker.name, attack.Name));
                     if (attacked.weakSpots.Contains(attack.Name))
                     {
-                        dmg *= 2;
+                        dmg *= (int)1.5;
                         Console.WriteLine("Вы попали в уязвимое место!");
                     }
                     if (attack.Type == attacked.weaknessType)
                     {
-                        dmg *= 2;
+                        dmg *= (int)1.5;
                         Console.WriteLine("Враг уязвим к данному типу урона.");
                     }
-
-                    if (attack.Type == attacked.resistance)
+                    else if (attack.Type == attacked.resistance)
                     {
-                        dmg /= 2;
+                        dmg /= (int) 1.5;
                         Console.WriteLine("Враг устойчив к данному типу урона.");
                     }
                     if(rnd.Next(1, 101) < 10)
@@ -61,7 +65,7 @@ namespace RGR___Dungeon
                         Console.WriteLine("Крит!");
 
                     }
-                    Console.WriteLine(string.Format("{0} успешно использовал приём {1}, урон: {2} ", attacker.name, attack.Name, dmg));
+                    Console.WriteLine($"Урон: {dmg}");
                     attacked.TakeDamage(dmg, attack);
                 }
                 else Console.WriteLine(string.Format("У {1} не вышло использовать {0}", attack.Name, attacker.name));

@@ -63,7 +63,7 @@ namespace RGR___Dungeon
             resistance = AttackType.physical;
 
             attacks.Add(new Attack(13 + (int)Math.Pow(2, difficulty), 90, false, "Удар", defaultAttackType));
-            attacks.Add(new Attack(0, 100, true, "Исцеление"));
+            attacks.Add(new Attack(0, 100, true, "Исцеление", AttackType.special));
             attacks.Add(new Attack(18 + (int)Math.Pow(2, difficulty), 75, false, "Сильный удар", defaultAttackType));
             weakSpots.Add("удар по голове");
             weakSpots.Add("удар по рукам");
@@ -100,7 +100,7 @@ namespace RGR___Dungeon
 
             attacks.Add(new Attack(18 + (int)Math.Pow(2, difficulty), 80, true, "Поглощение жизни", defaultAttackType));
             attacks.Add(new Attack(28 + (int)Math.Pow(2, difficulty), 70, false, "Крик", defaultAttackType));
-            attacks.Add(new Attack(3 + (int)Math.Pow(2, difficulty), 100, false, "Удар"));
+            attacks.Add(new Attack(3 + (int)Math.Pow(2, difficulty), 100, false, "Удар", AttackType.physical));
             weakSpots.Add("удар по торсу");
         }
     }

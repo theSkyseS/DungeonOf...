@@ -8,9 +8,11 @@ namespace RGR___Dungeon
 {
     enum AttackType 
     {
+        nothing,
         physical,
         magic,
         poison,
-        ranged
+        ranged,
+        special
     }
 }
