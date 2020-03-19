@@ -10,41 +10,97 @@ namespace RGR___Dungeon
     {
         protected class Attack
         {
-            public int successChance;
-            public int damage;
-            public bool special;
-            public string name;
-
-            public Attack(int dmg, int chance, bool spec, string Name)
+            #region fields
+            private int successChance;
+            private int damage;
+            private bool special;
+            private string name;
+            private AttackType type;
+            private int baseDamage;
+            #endregion
+            public Attack(int dmg, int chance, bool spec, string Name, AttackType Type = AttackType.physical)
             {
-                damage = dmg; successChance = chance; special = spec; this.name = Name;
+                damage = dmg; successChance = chance; special = spec; name = Name; type = Type; baseDamage = dmg;
             }
+
+            #region propeties
+            public int BaseDamage => baseDamage;
+            public string Name => name;
+            public bool Special => special;
+            public int Damage { set => damage = value; get => damage; }
+            public int SuccessChance => successChance;
+            internal AttackType Type { set => type = value; get => type; }
+            #endregion
+
             public void AttackEvent(Character attacked, Attack attack, Character attacker)
             {
                 Random rnd = new Random();
+                int dmg = Damage;
                 int i = rnd.Next(1, 100);
-                if (i <= successChance)
+                if (i <= SuccessChance)
                 {
-                    Console.WriteLine(string.Format("{0} успешно использовал приём {1}, урон: {2} ", attacker.name, attack.name, attack.damage));
-                    attacked.TakeDamage(this.damage, attack);
+                    if (attacked.weakSpots.Contains(attack.Name))
+                    {
+                        dmg *= 2;
+                        Console.WriteLine("Вы попали в уязвимое место!");
+                    }
+                    if (attack.Type == attacked.weaknessType)
+                    {
+                        dmg *= 2;
+                        Console.WriteLine("Враг уязвим к данному типу урона.");
+                    }
+
+                    if (attack.Type == attacked.resistance)
+                    {
+                        dmg /= 2;
+                        Console.WriteLine("Враг устойчив к данному типу урона.");
+                    }
+                    if(rnd.Next(1, 101) < 10)
+                    {
+                        dmg *= 2;
+                        Console.WriteLine("Крит!");
+
+                    }
+                    Console.WriteLine(string.Format("{0} успешно использовал приём {1}, урон: {2} ", attacker.name, attack.Name, dmg));
+                    attacked.TakeDamage(dmg, attack);
                 }
-                else Console.WriteLine(string.Format("У {1} не вышло использовать {0}", attack.name, attacker.name));
+                else Console.WriteLine(string.Format("У {1} не вышло использовать {0}", attack.Name, attacker.name));
             }
         }
 
         #region fields
-        protected List<Attack> attacks = new List<Attack>();
-        public int health;
         public string name;
+        protected List<Attack> attacks = new List<Attack>();
+        protected int maxhealth;
+        protected AttackType weaknessType;
+        protected AttackType resistance;
+        private int health;
+        protected List<string> weakSpots = new List<string>();
         #endregion
 
         #region Properties
+        public int Health
+        {
+            get => health;
+            set
+            {
+                if (value <= maxhealth)
+                {
+                    health = value;
+                }
+                else
+                {
+                    health = maxhealth;
+                }
+            }
+        }
         #endregion
 
         #region Methods
-        public void Heal(int value) => health += value;
+        public void Heal(int value) => Health += value;
         protected abstract void TakeDamage(int dmg, Attack attack);
         public abstract void InflictAttack(Character attacked);
         #endregion
     }
 }
+

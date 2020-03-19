@@ -1,5 +1,4 @@
-﻿using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace RGR___Dungeon
@@ -8,35 +7,58 @@ namespace RGR___Dungeon
     {
         #region fields
         public int score;
-        public int maxhealth;
         public int healthPotions;
         public int expirience;
-        public int strength;
+        private int strength;
+        private Weapon currentWeapon;
         private int expToNextLevel;
         private int level;
         #endregion
 
         #region Properties
-
+        public int Level => level;
         #endregion
 
-        #region methods
         public Player()
         {
             name = "Игрок";
-            attacks.Add(new Attack(15, 85, false, "удар по торсу"));
-            attacks.Add(new Attack(20, 55, false, "удар по голове"));
-            attacks.Add(new Attack(6, 95, false, "удар по рукам"));
-            attacks.Add(new Attack(5, 100, false, "удар по ногам"));
+            attacks.Add(new Attack(25, 85, false, "удар по торсу"));
+            attacks.Add(new Attack(30, 55, false, "удар по голове"));
+            attacks.Add(new Attack(16, 95, false, "удар по рукам"));
+            attacks.Add(new Attack(15, 100, false, "удар по ногам"));
             attacks.Add(new Attack(0, 100, true, "лечение"));
             level = 1;
-            health = 100;
             maxhealth = 100;
+            Health = 100;
             healthPotions = 2;
             score = 0;
             expirience = 0;
-            strength = 1;
+            strength = 0;
             expToNextLevel = 10;
+        }
+        
+        #region methods
+        protected override void TakeDamage(int dmg, Attack attack) => Health -= dmg;
+
+        private void UsePotion()
+        {
+            if (healthPotions > 0)
+            {
+                this.healthPotions -= 1;
+                Heal(10 * level);
+            }
+            else Console.WriteLine("У Вас нет зелий");
+        }
+        private void RegenerateAttacks()
+        {
+            foreach (Attack attack in attacks)
+            {
+                if (!attack.Special)
+                {
+                    attack.Damage = attack.BaseDamage + currentWeapon.Damage + strength * 2;
+                    attack.Type = currentWeapon.AttackType;
+                }
+            }
         }
         public override void InflictAttack(Character attacked)
         {
@@ -45,7 +67,7 @@ namespace RGR___Dungeon
             {
                 int i = int.Parse(Console.ReadLine());
                 Attack UsedAttack = attacks[i - 1];
-                if (UsedAttack.special) UsePotion();
+                if (UsedAttack.Special) UsePotion();
                 UsedAttack.AttackEvent(attacked, UsedAttack, this);
             }
             catch (Exception)
@@ -55,45 +77,78 @@ namespace RGR___Dungeon
             }
             
         }
-        public void levelUp()
+        public void CheckLevelUp()
+        {
+            while(expirience >= expToNextLevel)
+                try
+                {
+                    Console.WriteLine("Новый уровень! \n"
+                                      + "Выберите характеристику для улучшения: 1 - Здоровье, 2 - Сила");
+                    int i = int.Parse(Console.ReadLine());
+                    expirience -= expToNextLevel;
+                    level += 1;
+                    expToNextLevel += 5 + (int)Math.Pow(2, level);
+                    switch(i)
+                    {
+                        case 1:
+                            maxhealth += 10;
+                            Health += 10;
+                            break;
+                        case 2: strength += 1;
+                            RegenerateAttacks();
+                            break;
+                        default: maxhealth += 10;
+                            Health += 10;
+                            break;
+                    }
+                    
+                }
+                catch(Exception)
+                {
+                    CheckLevelUp();
+                }
+        }
+        public void TakeNewWeapon(Weapon weapon)
         {
             try
             {
-                Console.WriteLine("Выберите характеристику для улучшения: 1 - Здоровье, 2 - Сила");
-                int i = int.Parse(Console.ReadLine());
-                expToNextLevel += 5 + (int)Math.Pow(2, level);
-                expirience = 0;
-                switch(i)
+                Console.WriteLine(string.Format("Вы нашли {0}. Урон: {1}, Прочность: {2}, Тип атаки: {3}",
+                                                weapon.WeaponName,
+                                                weapon.Damage,
+                                                weapon.Durability,
+                                                weapon.AttackType));
+                if (currentWeapon == null)
                 {
-                    case 1: maxhealth += 10;
-                        health += 10;
-                        break;
-                    case 2: strength += 1; break;
-                    default: maxhealth += 10;
-                        health += 10;
-                        break;
+                    Console.WriteLine();
+                    Console.WriteLine("У Вас нет оружия");
                 }
-                foreach(Attack attack in attacks)
+                else
                 {
-                    attack.damage += strength * 2;
+                    Console.WriteLine();
+                    Console.WriteLine(string.Format("Ваше текущее оружие: {0}. Урон: {1}, Прочность: {2}, Тип атаки {3}",
+                                                currentWeapon.WeaponName,
+                                                currentWeapon.Damage,
+                                                currentWeapon.Durability,
+                                                currentWeapon.AttackType));
                 }
+                Console.WriteLine();
+                Console.WriteLine("Введите: 1 - взять новое оружие, 2 - оставить текущее оружие");
+                int choice = int.Parse(Console.ReadLine());
+                if(choice == 1)
+                {
+                    Console.Clear();
+                    currentWeapon = weapon;
+                    Console.WriteLine(String.Format("Вы взяли {0}", weapon.WeaponName));
+                    RegenerateAttacks();
+                }
+                else if (choice == 2) Console.WriteLine(String.Format("Вы оставили {0}", currentWeapon.WeaponName));
             }
-            catch(Exception)
+            catch (Exception)
             {
-                levelUp();
+                TakeNewWeapon(weapon);
             }
         }
-        protected override void TakeDamage(int dmg, Attack attack) => health -= dmg;
         public void TakePotions(int value) => this.healthPotions += value;
-        private void UsePotion()
-        {
-            this.healthPotions -= 1;
-            if (maxhealth - health >= 20)
-                Heal(20);
-            else
-                Heal(maxhealth - health);
-        }
         #endregion
-
     }
 }
