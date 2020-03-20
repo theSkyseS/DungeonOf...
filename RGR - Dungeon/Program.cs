@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading;
+using System.Windows.Media;
 
 namespace RGR___Dungeon
 {
@@ -10,14 +12,15 @@ namespace RGR___Dungeon
         #region MainMethods
         static void Main()
         {
-            startMusic();
+            StartMusic();
             GameMethod();
         }
         private static void GameMethod()
         {
             Console.Clear();
             Player player = new Player();
-            List<string> score = LoadScore();
+            Score score = Score.LoadScore();
+            
             try
             {
                 Console.WriteLine("Введите номер действия:\n 1 - Новая игра \n 2 - Загрузить игру \n 3 - Доска Почёта \n 4 - Выход");
@@ -27,14 +30,20 @@ namespace RGR___Dungeon
                     case 1:
                         Console.WriteLine("Введите имя персонажа");
                         player.name = Console.ReadLine();
+                        if (player.name == "") player.name = "Игрок";
+                        if (player.name == "Doom Guy")
+                        {
+                            Console.WriteLine("Видно, Вы опытный игрок. Сложность +10");
+                            Enemy.difficulty += 10;                           
+                        }
                         GameCycle(player, score); 
                         break;
                     case 2: GameCycle(LoadGame(), score); 
                         break;
                     case 3:
-                        WriteScoreBoard(score);
+                        score.WriteScoreBoard();
                         Console.ReadKey();
-                        break; 
+                        break;
                     default: return;
                 }
                 GameMethod();
@@ -47,7 +56,7 @@ namespace RGR___Dungeon
             }
         }
 
-        static void GameCycle(Player player, List<string> score)
+        static void GameCycle(Player player, Score score)
         {
             do
             {
@@ -82,16 +91,16 @@ namespace RGR___Dungeon
                         }
                     case "3": SaveGame(player); break;
                     case "4":
-                        SaveScore(score);
+                        score.SaveScore();
                         return;
                     default:
                         Console.WriteLine("Неправильно");
                         break;
                 }
             } while (player.Health > 0);
-            SaveScore(score);
+            score.SaveScore();
         }
-        static void Round(bool door, Player player, List<string> score)
+        static void Round(bool door, Player player, Score score)
         {
             if (door)
             {
@@ -118,7 +127,7 @@ namespace RGR___Dungeon
                 if (player.Health <= 0)
                 {
                     Console.WriteLine(string.Format("Поражение! =( Ваш счёт: {0}.", player.score));
-                    AddToScoreboard(score, player);
+                    score.AddToScoreboard(player);
                 }
                 else
                 {
@@ -233,7 +242,7 @@ namespace RGR___Dungeon
         static void SaveGame(Player player)
         {
             JsonSerializer serializer = new JsonSerializer();
-            using (StreamWriter sw = new StreamWriter(@"save.json"))
+            using (StreamWriter sw = new StreamWriter(@"saves/save.json"))
             using (JsonWriter writer = new JsonTextWriter(sw))
             {
                 serializer.Serialize(writer, player);
@@ -241,61 +250,38 @@ namespace RGR___Dungeon
         }
         static Player LoadGame()
         {
-            JsonSerializer serializer = new JsonSerializer();
-            using (StreamReader sw = new StreamReader(@"save.json"))
-            using (JsonReader rdr = new JsonTextReader(sw))
+            try
             {
-                Player player = serializer.Deserialize<Player>(rdr);
-                return player;
+
+                JsonSerializer serializer = new JsonSerializer();
+                using (StreamReader sw = new StreamReader(@"saves/save.json"))
+                using (JsonReader rdr = new JsonTextReader(sw))
+                {
+                    Player player = serializer.Deserialize<Player>(rdr);
+                    return player;
+                }
+            }
+            catch(IOException)
+            {
+                Console.WriteLine("Не найдено сохранений. Начало новой игры.");
+                return new Player();
             }
         }
         #endregion
 
         #region ScoreBoard System
-        static List<string> LoadScore()
-        {
-            using (StreamReader sr = new StreamReader(@"scoreboard.json"))
-            {
-                List<string> score = new List<string>();
-                while(!sr.EndOfStream)
-                {
-                    score.Add(sr.ReadLine());
-                }
-                sr.Close();
-                sr.Dispose();
-                score.Sort();
-                return score;
-            }
-        }
-        static void SaveScore(List<string> score)
-        {
-            using(StreamWriter sw = new StreamWriter(@"scoreboard.json"))
-            {
-                for(int i = 0; i < score.Count; i++)
-                {
-                    sw.WriteLine(score[i]);
-                }
-                sw.Close();
-                sw.Dispose();
-            }
-        }
-        static void AddToScoreboard(List<string> score, Player player)
-        {
-            score.Add(string.Format("{0}, Счёт: {1}", player.name, player.score));
-        }
-        static void WriteScoreBoard(List<string> score)
-        {
-            for (int i = 0; i < score.Count; i++) Console.WriteLine(score[i]);
-        }
+        
         #endregion
 
         #region Music System
-        static void startMusic()
+        static void StartMusic()
         {
-            WMPLib.WindowsMediaPlayer WMP = new WMPLib.WindowsMediaPlayer();
-            WMP.URL = @"09 Fields of Verdun (Soundtrack Version).mp3";
-            WMP.settings.volume = 5;
-            WMP.controls.play();
+            WMPLib.WindowsMediaPlayer musicPlayer = new WMPLib.WindowsMediaPlayer
+            {
+                URL = @"music/GameMusic.wpl"
+            };
+            musicPlayer.settings.volume = 6;
+            musicPlayer.controls.play(); 
         }
         #endregion
     }

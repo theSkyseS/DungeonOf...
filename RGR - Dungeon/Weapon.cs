@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RGR___Dungeon
 {
-    abstract class Weapon
+    abstract class Weapon : Entity
     {
         protected int damage;
         protected int durability;

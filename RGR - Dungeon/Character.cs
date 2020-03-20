@@ -17,8 +17,10 @@ namespace RGR___Dungeon
             private string name;
             private AttackType type;
             private int baseDamage;
+            private int useChanceMin;
+            private int useChanceMax;
             #endregion
-            public Attack(int dmg, int chance, bool spec, string Name, AttackType Type)
+            public Attack(int dmg, int chance, bool spec, string Name, AttackType Type = AttackType.physical)
             {
                 damage = dmg; successChance = chance; special = spec; name = Name; type = Type; baseDamage = dmg;
             }
@@ -26,7 +28,10 @@ namespace RGR___Dungeon
             {
                 damage = dmg; successChance = chance; special = spec; name = Name; type = AttackType.physical; baseDamage = dmg;
             }
-
+            public Attack(int dmg, int chance, bool spec, string Name, int usechancemin, int usechancemax, AttackType Type = AttackType.physical)
+            {
+                damage = dmg; successChance = chance; special = spec; name = Name; type = Type; baseDamage = dmg; useChanceMin = usechancemin; useChanceMax = usechancemax;
+            }
             #region propeties
             public int BaseDamage => baseDamage;
             public string Name => name;
@@ -34,6 +39,8 @@ namespace RGR___Dungeon
             public int Damage { set => damage = value; get => damage; }
             public int SuccessChance => successChance;
             internal AttackType Type { set => type = value; get => type; }
+            public int UseChanceMin => useChanceMin;
+            public int UseChanceMax => useChanceMax;
             #endregion
 
             public void AttackEvent(Character attacked, Attack attack, Character attacker)
