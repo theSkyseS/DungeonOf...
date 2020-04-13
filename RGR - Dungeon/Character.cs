@@ -46,6 +46,7 @@ namespace RGR___Dungeon
             public void AttackEvent(Character attacked, Attack attack, Character attacker)
             {
                 Random rnd = new Random();
+                Random random = new Random();
                 int dmg = Damage;
                 int i = rnd.Next(1, 100);
                 if (i <= SuccessChance)
@@ -53,20 +54,20 @@ namespace RGR___Dungeon
                     Console.WriteLine(string.Format("{0} успешно использовал приём {1}", attacker.name, attack.Name));
                     if (attacked.weakSpots.Contains(attack.Name))
                     {
-                        dmg *= (int)1.5;
+                        dmg = (int)(dmg * 1.5);
                         Console.WriteLine("Вы попали в уязвимое место!");
                     }
                     if (attack.Type == attacked.weaknessType)
                     {
-                        dmg *= (int)1.5;
+                        dmg = (int)(dmg * 1.5);
                         Console.WriteLine("Враг уязвим к данному типу урона.");
                     }
                     else if (attack.Type == attacked.resistance)
                     {
-                        dmg /= (int) 1.5;
+                        dmg = (int)(dmg / 1.5);
                         Console.WriteLine("Враг устойчив к данному типу урона.");
                     }
-                    if(rnd.Next(1, 101) < 10)
+                    if(random.Next(1, 101) < 10)
                     {
                         dmg *= 2;
                         Console.WriteLine("Крит!");

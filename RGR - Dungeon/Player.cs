@@ -14,6 +14,7 @@ namespace RGR___Dungeon
         private int expToNextLevel;
         private int level;
         private Weapon currentWeapon;
+        public static int difficulty = 1;
         #endregion
 
         #region Properties
@@ -81,7 +82,7 @@ namespace RGR___Dungeon
             {
                 if (!attack.Special)
                 {
-                    attack.Damage = attack.BaseDamage + currentWeapon.Damage + strength * 2;
+                    attack.Damage = attack.BaseDamage + currentWeapon.Damage + strength * 7;
                     attack.Type = currentWeapon.AttackType;
                 }
             }
@@ -113,18 +114,18 @@ namespace RGR___Dungeon
                     int i = int.Parse(Console.ReadLine());
                     expirience -= expToNextLevel;
                     level += 1;
-                    expToNextLevel += 5 + (int)Math.Pow(2, level);
+                    expToNextLevel += 15 * level;
                     switch(i)
                     {
                         case 1:
-                            maxhealth += 10;
-                            Health += 10;
+                            maxhealth += 25;
+                            Health += 25;
                             break;
                         case 2: strength += 1;
                             RegenerateAttacks();
                             break;
-                        default: maxhealth += 10;
-                            Health += 10;
+                        default: maxhealth += 25;
+                            Health += 25;
                             break;
                     }
                     

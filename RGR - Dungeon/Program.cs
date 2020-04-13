@@ -34,7 +34,7 @@ namespace RGR___Dungeon
                         if (player.name == "Doom Guy")
                         {
                             Console.WriteLine("Видно, Вы опытный игрок. Сложность +10");
-                            Enemy.difficulty += 10;                           
+                            Player.difficulty += 10;                           
                         }
                         GameCycle(player, score); 
                         break;
@@ -171,9 +171,9 @@ namespace RGR___Dungeon
 
         static void DifficultyChange(Player player)
         {
-            if (player.Level > 4 * Enemy.difficulty)
+            if (player.Level > 4 * Player.difficulty)
             {
-                Enemy.difficulty += 1;
+                Player.difficulty += 1;
                 Console.Clear();
                 Console.WriteLine("Вы нашли дверь, ведущую на более глубокий уровень подземелья.\n"
                                   + "Враги станут сильнее, но и награда больше.");
@@ -232,7 +232,7 @@ namespace RGR___Dungeon
         static int GenerateGold(Player player)
         {
             Random random = new Random();
-            int money = random.Next(10 * Enemy.difficulty, 50 * Enemy.difficulty);
+            int money = random.Next(10 * Player.difficulty, 50 * Player.difficulty);
             player.score += money;
             return money;
         }

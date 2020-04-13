@@ -10,7 +10,7 @@ namespace RGR___Dungeon
     {
 
         #region Fields
-        public static int difficulty = 1;
+        
         protected int exp;
         protected AttackType defaultAttackType;
 
@@ -26,7 +26,7 @@ namespace RGR___Dungeon
         {
             Random rnd = new Random();
             Attack UsedAttack = attacks[rnd.Next(0, attacks.Count)];
-            if (UsedAttack.Special) Heal(13 + (int)Math.Pow(2, difficulty));
+            if (UsedAttack.Special) Heal(13 + 5*Player.difficulty);
             UsedAttack.AttackEvent(attacked, UsedAttack, this);
         }
         #endregion
@@ -38,15 +38,15 @@ namespace RGR___Dungeon
         public Rat()
         {
             name = "Крыса";
-            maxhealth = 15 + (int)Math.Pow(5, difficulty);
+            maxhealth = 10 + 10 * Player.difficulty;
             Health = maxhealth;
-            exp = 5;
+            exp = 5 + 15 * Player.difficulty;
             defaultAttackType = AttackType.physical;
             weaknessType = AttackType.physical;
             resistance = AttackType.poison;
 
-            attacks.Add(new Attack(3 + (int)Math.Pow(2, difficulty), 80, false, "Укус", defaultAttackType));
-            attacks.Add(new Attack(8 + (int)Math.Pow(2, difficulty), 50, false, "Сильный укус", defaultAttackType));
+            attacks.Add(new Attack(3 + 5 * Player.difficulty, 80, false, "Укус", defaultAttackType));
+            attacks.Add(new Attack(8 + 10 * Player.difficulty, 50, false, "Сильный укус", defaultAttackType));
             weakSpots.Add("удар по голове");
         }
     }
@@ -55,16 +55,16 @@ namespace RGR___Dungeon
         public DarkKnight()
         {
             name = "Падший рыцарь";
-            maxhealth = 100 + (int)Math.Pow(5, difficulty);
+            maxhealth = 80 + 20 * Player.difficulty;
             Health = maxhealth;
-            exp = 30;
+            exp = 30 + 50 * Player.difficulty;
             defaultAttackType = AttackType.physical;
             weaknessType = AttackType.poison;
             resistance = AttackType.physical;
 
-            attacks.Add(new Attack(13 + (int)Math.Pow(2, difficulty), 90, false, "Удар", defaultAttackType));
+            attacks.Add(new Attack(17*Player.difficulty, 90, false, "Удар", defaultAttackType));
             attacks.Add(new Attack(0, 100, true, "Исцеление", AttackType.special));
-            attacks.Add(new Attack(18 + (int)Math.Pow(2, difficulty), 75, false, "Сильный удар", defaultAttackType));
+            attacks.Add(new Attack(20*Player.difficulty, 75, false, "Сильный удар", defaultAttackType));
             weakSpots.Add("удар по голове");
             weakSpots.Add("удар по рукам");
         }
@@ -74,15 +74,15 @@ namespace RGR___Dungeon
         public SlimeMonster()
         {
             name = "Слизень";
-            maxhealth = 50 + (int)Math.Pow(5, difficulty);
+            maxhealth = 50 + 15 * Player.difficulty;
             Health = maxhealth;
-            exp = 15;
+            exp = 15 + 20 * Player.difficulty;
             defaultAttackType = AttackType.poison;
             weaknessType = AttackType.physical;
             resistance = AttackType.poison;
 
-            attacks.Add(new Attack(8 + (int)Math.Pow(2, difficulty), 95, false, "Плевок слизью", defaultAttackType));
-            attacks.Add(new Attack(13 + (int)Math.Pow(2, difficulty), 80, false, "Удар", defaultAttackType));
+            attacks.Add(new Attack(8 * Player.difficulty, 95, false, "Плевок слизью", defaultAttackType));
+            attacks.Add(new Attack(13 * Player.difficulty, 80, false, "Удар", defaultAttackType));
             weakSpots.Add("удар по торсу");
         }
     }
@@ -91,16 +91,16 @@ namespace RGR___Dungeon
         public VengefulSpirit()
         {
             name = "Дух мщения";
-            maxhealth = 150 + (int)Math.Pow(5, difficulty);
+            maxhealth = 150 + 25 * Player.difficulty;
             Health = maxhealth;
-            exp = 50;
+            exp = 50 + 70 * Player.difficulty;
             defaultAttackType = AttackType.magic;
             weaknessType = AttackType.magic;
             resistance = AttackType.ranged;
 
-            attacks.Add(new Attack(18 + (int)Math.Pow(2, difficulty), 80, true, "Поглощение жизни", defaultAttackType));
-            attacks.Add(new Attack(28 + (int)Math.Pow(2, difficulty), 70, false, "Крик", defaultAttackType));
-            attacks.Add(new Attack(3 + (int)Math.Pow(2, difficulty), 100, false, "Удар", AttackType.physical));
+            attacks.Add(new Attack(17 * Player.difficulty, 80, true, "Поглощение жизни", defaultAttackType));
+            attacks.Add(new Attack(24 * Player.difficulty , 70, false, "Крик", defaultAttackType));
+            attacks.Add(new Attack(3 * Player.difficulty, 100, false, "Удар", AttackType.physical));
             weakSpots.Add("удар по торсу");
         }
     }
@@ -109,16 +109,16 @@ namespace RGR___Dungeon
         public SkeletonArcher()
         {
             name = "Скелет";
-            maxhealth = 75 + (int)Math.Pow(5, difficulty);
+            maxhealth = 75 + 15 * Player.difficulty;
             Health = maxhealth;
-            exp = 25;
+            exp = 25 + 30 * Player.difficulty;
             defaultAttackType = AttackType.ranged;
             weaknessType = AttackType.poison;
             resistance = AttackType.ranged;
 
-            attacks.Add(new Attack(13 + (int)Math.Pow(2, difficulty), 75, false, "Выстрел", defaultAttackType));
-            attacks.Add(new Attack(23 + (int)Math.Pow(2, difficulty), 60, false, "Заряженный выстрел", defaultAttackType));
-            attacks.Add(new Attack(8 + (int)Math.Pow(2, difficulty), 90, false, "Удар луком"));
+            attacks.Add(new Attack(10 * Player.difficulty, 75, false, "Выстрел", defaultAttackType));
+            attacks.Add(new Attack(20 * Player.difficulty, 60, false, "Заряженный выстрел", defaultAttackType));
+            attacks.Add(new Attack(5 * Player.difficulty, 90, false, "Удар луком"));
             weakSpots.Add("удар по рукам");
             weakSpots.Add("удар по ногам");
         }
@@ -129,16 +129,16 @@ namespace RGR___Dungeon
         public Zombie()
         {
             name = "Зомби";
-            maxhealth = 100 + (int)Math.Pow(5, difficulty);
+            maxhealth = 100 + 20 * Player.difficulty;
             Health = maxhealth;
-            exp = 25;
+            exp = 25 + 30 * Player.difficulty;
             defaultAttackType = AttackType.physical;
             weaknessType = AttackType.magic;
             resistance = AttackType.poison;
 
-            attacks.Add(new Attack(13 + (int)Math.Pow(2, difficulty), 90, false, "Удар"));
-            attacks.Add(new Attack(23 + (int)Math.Pow(2, difficulty), 50, false, "Укус"));
-            attacks.Add(new Attack(3 + (int)Math.Pow(2, difficulty), 95, false, "Слабый удар"));
+            attacks.Add(new Attack(6 * Player.difficulty, 90, false, "Удар"));
+            attacks.Add(new Attack(15 * Player.difficulty, 50, false, "Укус"));
+            attacks.Add(new Attack(2 * Player.difficulty, 95, false, "Слабый удар"));
             weakSpots.Add("удар по рукам");
             weakSpots.Add("удар по ногам");
         }
