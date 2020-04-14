@@ -6,7 +6,6 @@ namespace RGR___Dungeon
     {
 
         #region Fields
-        
         protected int exp;
         protected AttackType defaultAttackType;
 
@@ -93,7 +92,7 @@ namespace RGR___Dungeon
             defaultAttackType = AttackType.magic;
             weaknessType = AttackType.magic;
             resistance = AttackType.ranged;
-
+            
             attacks.Add(new Attack(17 * Player.difficulty, 80, true, "Поглощение жизни", defaultAttackType));
             attacks.Add(new Attack(24 * Player.difficulty , 70, false, "Крик", defaultAttackType));
             attacks.Add(new Attack(3 * Player.difficulty, 100, false, "Удар", AttackType.physical));

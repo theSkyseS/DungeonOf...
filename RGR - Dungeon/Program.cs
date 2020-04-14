@@ -18,6 +18,7 @@ namespace RGR___Dungeon
             Player player = new Player();
             Score score = Score.LoadScore();
             
+
             try
             {
                 Console.WriteLine("Введите номер действия:\n 1 - Новая игра \n 2 - Загрузить игру \n 3 - Доска Почёта \n 4 - Выход");

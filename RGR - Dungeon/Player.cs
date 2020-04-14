@@ -88,6 +88,30 @@ namespace RGR___Dungeon
                 }
             }
         }
+        
+        #region methods
+        protected override void TakeDamage(int dmg, Attack attack) => Health -= dmg;
+
+        private void UsePotion()
+        {
+            if (healthPotions > 0)
+            {
+                this.healthPotions -= 1;
+                Heal(10 * level);
+            }
+            else Console.WriteLine("У Вас нет зелий");
+        }
+        private void RegenerateAttacks()
+        {
+            foreach (Attack attack in attacks)
+            {
+                if (!attack.Special)
+                {
+                    attack.Damage = attack.BaseDamage + currentWeapon.Damage + strength * 2;
+                    attack.Type = currentWeapon.AttackType;
+                }
+            }
+        }
         public override void InflictAttack(Character attacked)
         {
             Console.WriteLine("Введите номер атаки: 1-торс, 2-голова, 3-руки, 4-ноги, 5-использовать зелье");

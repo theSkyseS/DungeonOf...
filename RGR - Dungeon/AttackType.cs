@@ -8,6 +8,7 @@ namespace RGR___Dungeon
 {
     enum AttackType 
     {
+
         nothing,
         physical,
         magic,
