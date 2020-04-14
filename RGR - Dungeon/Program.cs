@@ -1,9 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
 using System.IO;
-using System.Collections.Generic;
-using System.Threading;
-using System.Windows.Media;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace RGR___Dungeon
@@ -13,7 +9,7 @@ namespace RGR___Dungeon
         #region MainMethods
         static void Main()
         {
-            StartMusic();
+            //StartMusic();
             GameMethod();
         }
         private static void GameMethod()
@@ -260,12 +256,8 @@ namespace RGR___Dungeon
         } 
             #endregion
 
-        #region ScoreBoard System
-
-            #endregion
-
         #region Music System
-            static void StartMusic()
+        static void StartMusic()
         {
             WMPLib.WindowsMediaPlayer musicPlayer = new WMPLib.WindowsMediaPlayer
             {
