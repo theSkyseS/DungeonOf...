@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace RGR___Dungeon
 {
+    [Serializable]
     abstract class Character : Entity
     {
+        [Serializable]
         protected class Attack
         {
             #region fields

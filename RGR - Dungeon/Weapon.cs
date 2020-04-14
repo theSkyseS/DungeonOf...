@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace RGR___Dungeon
 {
+    [Serializable]
     abstract class Weapon : Entity
     {
         protected int damage;
@@ -23,7 +24,7 @@ namespace RGR___Dungeon
         public Shortsword()
         {
             weaponName = "короткий меч";
-            damage = 5;
+            damage = 5 + 2 * Player.difficulty;
             durability = 25;
             attackType = AttackType.physical;
         }
@@ -33,7 +34,7 @@ namespace RGR___Dungeon
         public Sword()
         {
             weaponName = "меч";
-            damage = 10;
+            damage = 10 + 4 * Player.difficulty;
             durability = 35;
             attackType = AttackType.physical;
         }
@@ -43,7 +44,7 @@ namespace RGR___Dungeon
         public Longbow()
         {
             weaponName = "длинный лук";
-            damage = 7;
+            damage = 7 + 3 * Player.difficulty;
             durability = 25;
             attackType = AttackType.ranged;
         }
@@ -53,7 +54,7 @@ namespace RGR___Dungeon
         public Magicstaff()
         {
             weaponName = "магический посох";
-            damage = 15;
+            damage = 15 + 6 * Player.difficulty;
             durability = 15;
             attackType = AttackType.magic;
         }
@@ -63,7 +64,7 @@ namespace RGR___Dungeon
         public Acidstaff()
         {
             weaponName = "посох яда";
-            damage = 10;
+            damage = 10 + 4 * Player.difficulty;
             durability = 25;
             attackType = AttackType.poison;
         }

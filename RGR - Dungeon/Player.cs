@@ -1,11 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace RGR___Dungeon
 {
+    [Serializable]
     sealed class Player : Character
     {
         #region fields
+        public static int difficulty = 1;
         public int score;
         public int healthPotions;
         public int expirience;
@@ -14,12 +18,10 @@ namespace RGR___Dungeon
         private int expToNextLevel;
         private int level;
         private Weapon currentWeapon;
-        public static int difficulty = 1;
         #endregion
 
         #region Properties
         public int Level => level;
-
         public int Armor
         {
             get => armor; 
@@ -67,12 +69,14 @@ namespace RGR___Dungeon
                 Health -= dmg;
         }
 
-        private void UsePotion()
+        public void UsePotion()
         {
             if (healthPotions > 0)
             {
+                int heal = 10 * level;
                 this.healthPotions -= 1;
-                Heal(10 * level);
+                Heal(heal);
+                Console.WriteLine($"Вы выпили зелье. Здоровье +{heal}");
             }
             else Console.WriteLine("У Вас нет зелий");
         }
@@ -82,7 +86,7 @@ namespace RGR___Dungeon
             {
                 if (!attack.Special)
                 {
-                    attack.Damage = attack.BaseDamage + currentWeapon.Damage + strength * 7;
+                    attack.Damage = attack.BaseDamage + currentWeapon.Damage + strength * 6;
                     attack.Type = currentWeapon.AttackType;
                 }
             }

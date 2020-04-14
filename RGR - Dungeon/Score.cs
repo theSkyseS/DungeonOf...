@@ -9,7 +9,8 @@ namespace RGR___Dungeon
 {
     class Score
     {
-        private Dictionary<string, int> scoreBoard = new Dictionary<string, int>();
+        private List<int> scores = new List<int>();
+        private List<string> playerNames = new List<string>();
 
         public static Score LoadScore()
         {
@@ -18,7 +19,8 @@ namespace RGR___Dungeon
                 Score score = new Score();
                 while (!sr.EndOfStream)
                 {
-                    score.scoreBoard.Add(sr.ReadLine(), int.Parse(sr.ReadLine()));
+                    score.playerNames.Add(sr.ReadLine());
+                    score.scores.Add(int.Parse(sr.ReadLine()));
                 }
                 sr.Close();
                 return score;
@@ -28,22 +30,23 @@ namespace RGR___Dungeon
         {
             using (StreamWriter sw = new StreamWriter(@"saves/scoreboard.json"))
             {
-                for (int i = 0; i < scoreBoard.Count; i++)
+                for (int i = 0; i < scores.Count; i++)
                 {
-                    sw.WriteLine(scoreBoard.Keys.ElementAt(i));
-                    sw.WriteLine(scoreBoard.Values.ElementAt(i));
+                    sw.WriteLine(playerNames.ElementAt(i));
+                    sw.WriteLine(scores.ElementAt(i));
                 }
                 sw.Close();
             }
         }
         public void AddToScoreboard(Player player)
         {
-            scoreBoard.Add(player.name, player.score);
+            scores.Add(player.score);
+            playerNames.Add(player.name);
         }
         public void WriteScoreBoard()
         {
-            for(int i = 0; i < scoreBoard.Count; i++)
-                Console.WriteLine(scoreBoard.ElementAt(i));
+            for(int i = 0; i < playerNames.Count; i++)
+                Console.WriteLine(playerNames.ElementAt(i) + ", набрано очков: " + scores.ElementAt(i));
         }
 
         

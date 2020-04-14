@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace RGR___Dungeon
 {
+    [Serializable]
     abstract class Entity
     {
         //TODO: texture, position, ?

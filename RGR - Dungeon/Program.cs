@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Media;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace RGR___Dungeon
 {
@@ -33,8 +34,8 @@ namespace RGR___Dungeon
                         if (player.name == "") player.name = "Игрок";
                         if (player.name == "Doom Guy")
                         {
-                            Console.WriteLine("Видно, Вы опытный игрок. Сложность +10");
-                            Player.difficulty += 10;                           
+                            Console.WriteLine("Видно, Вы опытный игрок. Сложность +5");
+                            Player.difficulty += 5;                           
                         }
                         GameCycle(player, score); 
                         break;
@@ -48,8 +49,9 @@ namespace RGR___Dungeon
                 }
                 GameMethod();
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                //Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
                 Console.WriteLine("Некорректный ввод");
                 Console.ReadKey();
                 GameMethod();
@@ -73,29 +75,18 @@ namespace RGR___Dungeon
                 bool door = GenerateDoor();
                 Console.WriteLine("Введите число: \n "
                                   + "1 или 2 - выбрать дверь \n "
-                                  + "3 - сохранение(перезапишет старое) \n "
-                                  + "4 - выход в меню");
+                                  + "3 - использовать зелье \n "
+                                  + "4 - сохранение(перезапишет старое) \n "
+                                  + "5 - выход в меню");
                 string selectedDoor = Console.ReadLine();
                 switch (selectedDoor)
                 {
-                    case "1":
-                        {
-                            Round(door, player, score);
-                            break;
-                        }
-
-                    case "2":
-                        {
-                            Round(!door, player, score);
-                            break;
-                        }
-                    case "3": SaveGame(player); break;
-                    case "4":
-                        score.SaveScore();
-                        return;
-                    default:
-                        Console.WriteLine("Неправильно");
-                        break;
+                    case "1": Round(door, player, score); break;
+                    case "2": Round(!door, player, score); break;
+                    case "3": player.UsePotion(); break;
+                    case "4": SaveGame(player); break;
+                    case "5":score.SaveScore(); return;
+                    default: Console.WriteLine("Неккоректный ввод"); break;
                 }
             } while (player.Health > 0);
             score.SaveScore();
@@ -171,7 +162,7 @@ namespace RGR___Dungeon
 
         static void DifficultyChange(Player player)
         {
-            if (player.Level > 4 * Player.difficulty)
+            if (player.Level >= 3 * Player.difficulty)
             {
                 Player.difficulty += 1;
                 Console.Clear();
@@ -241,40 +232,40 @@ namespace RGR___Dungeon
         #region Save Load System
         static void SaveGame(Player player)
         {
-            JsonSerializer serializer = new JsonSerializer();
-            using (StreamWriter sw = new StreamWriter(@"saves/save.json"))
-            using (JsonWriter writer = new JsonTextWriter(sw))
+            BinaryFormatter formatter = new BinaryFormatter();
+            using (FileStream fs = new FileStream(@"saves/save.dat", FileMode.OpenOrCreate))
             {
-                serializer.Serialize(writer, player);
+                formatter.Serialize(fs, player);
             }
         }
         static Player LoadGame()
         {
             try
             {
-
-                JsonSerializer serializer = new JsonSerializer();
-                using (StreamReader sw = new StreamReader(@"saves/save.json"))
-                using (JsonReader rdr = new JsonTextReader(sw))
+                BinaryFormatter formatter = new BinaryFormatter();
+                using (FileStream fs = new FileStream(@"saves/save.dat", FileMode.OpenOrCreate))
                 {
-                    Player player = serializer.Deserialize<Player>(rdr);
+                    Player player = new Player();
+                    player = (Player)formatter.Deserialize(fs);
                     return player;
                 }
             }
-            catch(IOException)
+            catch (IOException e)
             {
+                //Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
                 Console.WriteLine("Не найдено сохранений. Начало новой игры.");
+                Console.ReadKey();
                 return new Player();
             }
-        }
-        #endregion
+        } 
+            #endregion
 
         #region ScoreBoard System
-        
-        #endregion
+
+            #endregion
 
         #region Music System
-        static void StartMusic()
+            static void StartMusic()
         {
             WMPLib.WindowsMediaPlayer musicPlayer = new WMPLib.WindowsMediaPlayer
             {
