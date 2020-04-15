@@ -46,7 +46,5 @@ namespace RGR___Dungeon
             for(int i = 0; i < playerNames.Count; i++)
                 Console.WriteLine(playerNames.ElementAt(i) + ", набрано очков: " + scores.ElementAt(i));
         }
-
-        
     }
 }

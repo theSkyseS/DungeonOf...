@@ -17,7 +17,6 @@ namespace RGR___Dungeon
             Console.Clear();
             Player player = new Player();
             Score score = Score.LoadScore();
-            
             try
             {
                 Console.WriteLine("Введите номер действия:\n 1 - Новая игра \n 2 - Загрузить игру \n 3 - Доска Почёта \n 4 - Выход");
@@ -45,9 +44,9 @@ namespace RGR___Dungeon
                 }
                 GameMethod();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                //Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
+               //Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
                 Console.WriteLine("Некорректный ввод");
                 Console.ReadKey();
                 GameMethod();
@@ -67,7 +66,7 @@ namespace RGR___Dungeon
                                                 player.score,
                                                 player.healthPotions,
                                                 player.expirience,
-                                                player.Armor));
+                                                player.currentArmor.durability));
                 bool door = GenerateDoor();
                 Console.WriteLine("Введите число: \n "
                                   + "1 или 2 - выбрать дверь \n "
@@ -97,11 +96,11 @@ namespace RGR___Dungeon
                 while (player.Health > 0 && enemy.Health > 0)
                 {
                     Console.Clear();
-                    Console.WriteLine(string.Format("Здоровье: {0}, Броня {3}, Монеты: {1}, Зелья здоровья: {2}",
+                    Console.WriteLine(string.Format("Здоровье: {0}, Броня: {3}, Монеты: {1}, Зелья здоровья: {2}",
                                                     player.Health,
                                                     player.score,
                                                     player.healthPotions,
-                                                    player.Armor));
+                                                    player.currentArmor.durability));
                     Console.WriteLine(string.Format("Враг: {0}, Здоровье врага: {1}",
                                                     enemy.name,
                                                     enemy.Health));
@@ -126,16 +125,13 @@ namespace RGR___Dungeon
                     Console.WriteLine(string.Format("Вы нашли {0} монет.", GenerateGold(player)));
                     player.expirience += enemy.Exp;
                     Random random = new Random();
+                    if (random.Next(101) < 30)
+                    {
+                        player.TakeNewWeapon(GenerateWeapon());
+                    }
                     if (random.Next(101) < 25)
                     {
-                        Weapon weapon = GenerateWeapon();
-                        player.TakeNewWeapon(weapon);
-                    }
-                    if (random.Next(101) < 20)
-                    {
-                        Console.WriteLine("Вы нашли части брони \n"
-                                          + "Броня + 15");
-                        player.Armor += 15;
+                        player.TakeNewArmor(GenerateArmor());
                     }
                 }
                 Console.ReadKey();
@@ -143,11 +139,13 @@ namespace RGR___Dungeon
             else
             {
                 Random random = new Random();
-                if (random.Next(101) < 20)
+                if (random.Next(101) < 15)
                 {
-                    Console.WriteLine("Вы нашли части брони \n"
-                                      + "Броня + 15");
-                    player.Armor += 15;
+                    player.TakeNewWeapon(GenerateWeapon());
+                }
+                if (random.Next(101) < 15)
+                {
+                    player.TakeNewArmor(GenerateArmor());
                 }
                 player.TakePotions(1);
                 Console.WriteLine("Вы нашли немного монет и зелье здоровья");
@@ -216,6 +214,23 @@ namespace RGR___Dungeon
                     return new Shortsword();
             }
         }
+        static Armor GenerateArmor()
+        {
+            Random random = new Random();
+            switch (random.Next(1, 5))
+            {
+                case 1:
+                    return new ChitinArmor();
+                case 2:
+                    return new PlateArmor();
+                case 3:
+                    return new ClothArmor();
+                case 4:
+                    return new LeatherArmor();
+                default:
+                    return new LeatherArmor();
+            }
+        }
         static int GenerateGold(Player player)
         {
             Random random = new Random();
@@ -246,7 +261,7 @@ namespace RGR___Dungeon
                     return player;
                 }
             }
-            catch (IOException e)
+            catch (IOException /*e*/)
             {
                 //Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
                 Console.WriteLine("Не найдено сохранений. Начало новой игры.");

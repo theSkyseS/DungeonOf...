@@ -45,7 +45,7 @@ namespace RGR___Dungeon
             public void AttackEvent(Character attacked, Attack attack, Character attacker)
             {
                 Random rnd = new Random();
-                Random random = new Random();
+                Random random = new Random(rnd.Next(101));
                 int dmg = Damage;
                 int i = rnd.Next(1, 100);
                 if (i <= SuccessChance)

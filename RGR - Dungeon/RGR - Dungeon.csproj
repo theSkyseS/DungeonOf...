@@ -57,6 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Armor.cs" />
     <Compile Include="AttackType.cs" />
     <Compile Include="Character.cs" />
     <Compile Include="Enemy.cs" />

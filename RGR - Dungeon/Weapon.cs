@@ -12,9 +12,10 @@ namespace RGR___Dungeon
 
         public int Damage { get => damage;}
         public int Durability { get => durability; set => durability = value; }
-        internal AttackType AttackType { get => attackType;}
-        public string WeaponName { get => weaponName;}
+        internal AttackType AttackType { get => attackType; }
+        public string WeaponName { get => weaponName; }
     }
+    [Serializable]
     class Shortsword : Weapon
     { 
         public Shortsword()
@@ -25,6 +26,7 @@ namespace RGR___Dungeon
             attackType = AttackType.physical;
         }
     }
+    [Serializable]
     class Sword : Weapon
     {
         public Sword()
@@ -35,6 +37,7 @@ namespace RGR___Dungeon
             attackType = AttackType.physical;
         }
     }
+    [Serializable]
     class Longbow : Weapon
     {
         public Longbow()
@@ -45,6 +48,7 @@ namespace RGR___Dungeon
             attackType = AttackType.ranged;
         }
     }
+    [Serializable]
     class Magicstaff : Weapon
     {
         public Magicstaff()
@@ -55,6 +59,7 @@ namespace RGR___Dungeon
             attackType = AttackType.magic;
         }
     }
+    [Serializable]
     class Acidstaff : Weapon
     {
         public Acidstaff()
@@ -63,6 +68,17 @@ namespace RGR___Dungeon
             damage = 10 + 4 * Player.difficulty;
             durability = 25;
             attackType = AttackType.poison;
+        }
+    }
+    [Serializable]
+    class NoWeapon : Weapon
+    {
+        public NoWeapon()
+        {
+            weaponName = "Нет оружия";
+            damage = 0;
+            durability = 0;
+            attackType = AttackType.nothing;
         }
     }
 }
