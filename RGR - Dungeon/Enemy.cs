@@ -9,6 +9,7 @@ namespace RGR___Dungeon
         
         protected int exp;
         protected AttackType defaultAttackType;
+        static Random rnd = new Random();
 
         public int Exp => exp;
         #endregion
@@ -20,7 +21,6 @@ namespace RGR___Dungeon
         }
         public override void InflictAttack(Character attacked)
         {
-            Random rnd = new Random();
             Attack UsedAttack = attacks[rnd.Next(0, attacks.Count)];
             if (UsedAttack.Special) Heal(13 + 5*Player.difficulty);
             UsedAttack.AttackEvent(attacked, UsedAttack, this);
@@ -137,6 +137,24 @@ namespace RGR___Dungeon
             attacks.Add(new Attack(2 * Player.difficulty, 95, false, "Слабый удар", defaultAttackType));
             weakSpots.Add("удар по рукам");
             weakSpots.Add("удар по ногам");
+        }
+    }
+    class Mage : Enemy
+    { 
+        public Mage()
+        {
+            name = "Маг-отступник";
+            maxhealth = 35 + 10 * Player.difficulty;
+            Health = maxhealth;
+            exp = 30 + 35 * Player.difficulty;
+            defaultAttackType = AttackType.magic;
+            weaknessType = AttackType.ranged;
+            resistance = AttackType.magic;
+
+            attacks.Add(new Attack(30 + 10 * Player.difficulty, 80, false, "Огненный шар", defaultAttackType));
+            attacks.Add(new Attack(20 + 8 * Player.difficulty, 90, false, "Удар молнии", defaultAttackType));
+            attacks.Add(new Attack(0, 99, true, "Исцеление", AttackType.special));
+            weakSpots.Add("удар по голове");
         }
     }
     //TODO: NEW MONSTERS

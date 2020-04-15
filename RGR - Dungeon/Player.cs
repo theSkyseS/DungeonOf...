@@ -85,7 +85,7 @@ namespace RGR___Dungeon
                                                 weapon.Damage,
                                                 weapon.Durability,
                                                 weapon.AttackType));
-                if (currentWeapon.GetType() != typeof(NoWeapon))
+                if (currentWeapon.GetType() == typeof(NoWeapon))
                 {
                     Console.WriteLine("\nУ Вас нет оружия");
                 }
@@ -158,9 +158,9 @@ namespace RGR___Dungeon
                     currentArmor = armor;
                     resistance = armor.Resistance;
                     weaknessType = armor.Weakness;
-                    Console.WriteLine(String.Format("Вы взяли {0}", armor.ArmorName));
+                    Console.WriteLine($"Вы взяли {armor.ArmorName}");
                 }
-                else if (choice == 2) Console.WriteLine(String.Format("Вы оставили {0}", currentArmor.ArmorName));
+                else if (choice == 2) Console.WriteLine($"Вы оставили {currentArmor.ArmorName}");
             }
             catch (Exception e)
             {
@@ -175,7 +175,7 @@ namespace RGR___Dungeon
                 currentArmor.durability -= damage;
                 if (currentArmor.durability <= 0)
                 {
-                    Console.WriteLine("Ваше броня сломалась, Вам стоит поискать себе другую");
+                    Console.WriteLine("Ваша броня сломалась, Вам стоит поискать себе другую");
                     currentArmor = new NoArmor();
                     resistance = AttackType.nothing;
                     weaknessType = AttackType.nothing;
@@ -211,9 +211,9 @@ namespace RGR___Dungeon
                     }
 
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
+                    //Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
                     CheckLevelUp();
                 }
         }

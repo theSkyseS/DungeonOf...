@@ -78,7 +78,7 @@ namespace RGR___Dungeon
                 {
                     case "1": Round(door, player, score); break;
                     case "2": Round(!door, player, score); break;
-                    case "3": player.UsePotion(); break;
+                    case "3": player.UsePotion(); Console.ReadKey(); break;
                     case "4": SaveGame(player); break;
                     case "5":score.SaveScore(); return;
                     default: Console.WriteLine("Неккоректный ввод"); break;
@@ -124,12 +124,11 @@ namespace RGR___Dungeon
                     Console.WriteLine();
                     Console.WriteLine(string.Format("Вы нашли {0} монет.", GenerateGold(player)));
                     player.expirience += enemy.Exp;
-                    Random random = new Random();
-                    if (random.Next(101) < 30)
+                    if (rnd.Next(101) < 30)
                     {
                         player.TakeNewWeapon(GenerateWeapon());
                     }
-                    if (random.Next(101) < 25)
+                    if (rnd.Next(101) < 25)
                     {
                         player.TakeNewArmor(GenerateArmor());
                     }
@@ -138,12 +137,11 @@ namespace RGR___Dungeon
             }
             else
             {
-                Random random = new Random();
-                if (random.Next(101) < 15)
+                if (rnd.Next(101) < 15)
                 {
                     player.TakeNewWeapon(GenerateWeapon());
                 }
-                if (random.Next(101) < 15)
+                if (rnd.Next(101) < 15)
                 {
                     player.TakeNewArmor(GenerateArmor());
                 }
@@ -170,7 +168,6 @@ namespace RGR___Dungeon
         #region Generators
         static bool GenerateDoor()
         {
-            Random rnd = new Random();
             if (rnd.Next(100) <= 60)
             {
                 return true;
@@ -182,8 +179,7 @@ namespace RGR___Dungeon
         }
         static Enemy GenerateEnemy()
         {
-            Random rnd = new Random();
-            switch (rnd.Next(6))
+            switch (rnd.Next(7))
             {
                 case 0: return new Rat();
                 case 1: return new DarkKnight();
@@ -191,14 +187,14 @@ namespace RGR___Dungeon
                 case 3: return new Zombie();
                 case 4: return new SkeletonArcher();
                 case 5: return new VengefulSpirit();
+                case 6: return new Mage();
                 default: return new Rat();
             }
         }
 
         static Weapon GenerateWeapon()
         {
-            Random random = new Random();
-            switch (random.Next(1,6))
+            switch (rnd.Next(1,6))
             {
                 case 1:
                     return new Shortsword();
@@ -216,8 +212,7 @@ namespace RGR___Dungeon
         }
         static Armor GenerateArmor()
         {
-            Random random = new Random();
-            switch (random.Next(1, 5))
+            switch (rnd.Next(1, 5))
             {
                 case 1:
                     return new ChitinArmor();
@@ -233,11 +228,12 @@ namespace RGR___Dungeon
         }
         static int GenerateGold(Player player)
         {
-            Random random = new Random();
-            int money = random.Next(10 * Player.difficulty, 50 * Player.difficulty);
+            int money = rnd.Next(10 * Player.difficulty, 50 * Player.difficulty);
             player.score += money;
             return money;
         }
+
+        static Random rnd = new Random();
         #endregion
 
         #region Save Load System
@@ -258,6 +254,9 @@ namespace RGR___Dungeon
                 {
                     Player player = new Player();
                     player = (Player)formatter.Deserialize(fs);
+                    Player.difficulty = player.Level / 3;
+                    if (player.name == "Doom Guy")
+                        Player.difficulty += 5;
                     return player;
                 }
             }

@@ -9,6 +9,7 @@ namespace RGR___Dungeon
         [Serializable]
         protected class Attack
         {
+            static Random rnd = new Random();
             #region fields
             private int successChance;
             private int damage;
@@ -44,8 +45,6 @@ namespace RGR___Dungeon
 
             public void AttackEvent(Character attacked, Attack attack, Character attacker)
             {
-                Random rnd = new Random();
-                Random random = new Random(rnd.Next(101));
                 int dmg = Damage;
                 int i = rnd.Next(1, 100);
                 if (i <= SuccessChance)
@@ -59,14 +58,14 @@ namespace RGR___Dungeon
                     if (attack.Type == attacked.weaknessType)
                     {
                         dmg = (int)(dmg * 1.5);
-                        Console.WriteLine("Враг уязвим к данному типу урона.");
+                        Console.WriteLine($"{attacked.name} уязвим к данному типу урона.");
                     }
                     else if (attack.Type == attacked.resistance)
                     {
                         dmg = (int)(dmg / 1.5);
-                        Console.WriteLine("Враг устойчив к данному типу урона.");
+                        Console.WriteLine($"{attacked.name} устойчив к данному типу урона.");
                     }
-                    if(random.Next(1, 101) < 10)
+                    if(rnd.Next(1, 101) < 10)
                     {
                         dmg *= 2;
                         Console.WriteLine("Крит!");
