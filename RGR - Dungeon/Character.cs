@@ -9,45 +9,40 @@ namespace RGR___Dungeon
         [Serializable]
         protected class Attack
         {
-            static Random rnd = new Random();
+
             #region fields
-            private int successChance;
+            Random rnd = new Random();
             private int damage;
-            private bool special;
             private string name;
             private AttackType type;
             private int baseDamage;
-            private int useChanceMin;
-            private int useChanceMax;
+            private int baseChance;
+            private int successChance;
             #endregion
-            public Attack(int dmg, int chance, bool spec, string Name, AttackType Type = AttackType.physical)
+            public Attack(int dmg, int chance, string Name, AttackType Type = AttackType.physical)
             {
-                damage = dmg; successChance = chance; special = spec; name = Name; type = Type; baseDamage = dmg;
+                damage = dmg; SuccessChance = chance; name = Name;
+                type = Type; baseDamage = dmg; baseChance = SuccessChance;
             }
-            public Attack(int dmg, int chance, bool spec, string Name)
+            public Attack(int dmg, int chance, string Name)
             {
-                damage = dmg; successChance = chance; special = spec; name = Name; type = AttackType.physical; baseDamage = dmg;
-            }
-            public Attack(int dmg, int chance, bool spec, string Name, int usechancemin, int usechancemax, AttackType Type = AttackType.physical)
-            {
-                damage = dmg; successChance = chance; special = spec; name = Name; type = Type; baseDamage = dmg; useChanceMin = usechancemin; useChanceMax = usechancemax;
+                damage = dmg; SuccessChance = chance; name = Name;
+                type = AttackType.physical; baseDamage = dmg; baseChance = SuccessChance;
             }
             #region propeties
             public int BaseDamage => baseDamage;
             public string Name => name;
-            public bool Special => special;
             public int Damage { set => damage = value; get => damage; }
-            public int SuccessChance => successChance;
+            public int SuccessChance { get => successChance; set => successChance = value; }
             internal AttackType Type { set => type = value; get => type; }
-            public int UseChanceMin => useChanceMin;
-            public int UseChanceMax => useChanceMax;
+            public int BaseChance => baseChance;
             #endregion
 
             public void AttackEvent(Character attacked, Attack attack, Character attacker)
             {
                 int dmg = Damage;
                 int i = rnd.Next(1, 100);
-                if (i <= SuccessChance)
+                if (i <= SuccessChance && attack.type != AttackType.special)
                 {
                     Console.WriteLine(string.Format("{0} успешно использовал приём {1}", attacker.name, attack.Name));
                     if (attacked.weakSpots.Contains(attack.Name))
@@ -65,7 +60,7 @@ namespace RGR___Dungeon
                         dmg = (int)(dmg / 1.5);
                         Console.WriteLine($"{attacked.name} устойчив к данному типу урона.");
                     }
-                    if(rnd.Next(1, 101) < 10)
+                    if (rnd.Next(1, 101) < 10)
                     {
                         dmg *= 2;
                         Console.WriteLine("Крит!");

@@ -9,12 +9,12 @@ namespace RGR___Dungeon
         protected AttackType resistance;
         protected AttackType weakness;
         protected string armorName;
+        protected int agilityPenalty;
 
         public AttackType Resistance => resistance;
         public AttackType Weakness => weakness;
         public string ArmorName => armorName;
-
-
+        public int AgilityPenalty => agilityPenalty;
     }
     [Serializable]
     class ClothArmor : Armor
@@ -24,6 +24,7 @@ namespace RGR___Dungeon
             armorName = "Броня из ткани";
             resistance = AttackType.magic;
             weakness = AttackType.physical;
+            agilityPenalty = 0;
             durability = 20 + 10 * Player.difficulty;
         }
     }
@@ -35,6 +36,7 @@ namespace RGR___Dungeon
             armorName = "Латная броня";
             resistance = AttackType.physical;
             weakness = AttackType.poison;
+            agilityPenalty = 20;
             durability = 45 + 20 * Player.difficulty;
         }
     }
@@ -46,6 +48,7 @@ namespace RGR___Dungeon
             armorName = "Кожанная броня";
             resistance = AttackType.ranged;
             weakness = AttackType.magic;
+            agilityPenalty = 10;
             durability = 25 + 15 * Player.difficulty;
         }
     }
@@ -57,6 +60,7 @@ namespace RGR___Dungeon
             armorName = "Хитиновая броня";
             resistance = AttackType.poison;
             weakness = AttackType.physical;
+            agilityPenalty = 15;
             durability = 35 + 15 * Player.difficulty;
         }
     }
@@ -69,6 +73,7 @@ namespace RGR___Dungeon
             resistance = AttackType.nothing;
             weakness = AttackType.nothing;
             durability = 0;
+            agilityPenalty = 0;
         }
     }
 }

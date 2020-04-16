@@ -13,8 +13,11 @@ namespace RGR___Dungeon
         private int strength;
         private int expToNextLevel;
         private int level;
+        private int statPoints;
+        private int agility;
         private Weapon currentWeapon;
         public Armor currentArmor;
+        Random random = new Random();
         #endregion
 
         #region Properties
@@ -24,11 +27,11 @@ namespace RGR___Dungeon
         public Player()
         {
             name = "Игрок";
-            attacks.Add(new Attack(25, 85, false, "удар по торсу", AttackType.physical));
-            attacks.Add(new Attack(30, 55, false, "удар по голове", AttackType.physical));
-            attacks.Add(new Attack(16, 95, false, "удар по рукам", AttackType.physical));
-            attacks.Add(new Attack(15, 100, false, "удар по ногам", AttackType.physical));
-            attacks.Add(new Attack(0, 100, true, "лечение"));
+            attacks.Add(new Attack(25, 75, "удар по торсу", AttackType.physical));
+            attacks.Add(new Attack(30, 45, "удар по голове", AttackType.physical));
+            attacks.Add(new Attack(18, 85, "удар по рукам", AttackType.physical));
+            attacks.Add(new Attack(15, 95, "удар по ногам", AttackType.physical));
+            attacks.Add(new Attack(0, 100, "лечение", AttackType.special));
             level = 1;
             maxhealth = 100;
             Health = 100;
@@ -36,6 +39,8 @@ namespace RGR___Dungeon
             score = 0;
             expirience = 0;
             strength = 0;
+            agility = 0;
+            statPoints = 0;
             expToNextLevel = 10;
             currentWeapon = new NoWeapon();
             currentArmor = new NoArmor();
@@ -52,7 +57,7 @@ namespace RGR___Dungeon
             {
                 int i = int.Parse(Console.ReadLine());
                 Attack UsedAttack = attacks[i - 1];
-                if (UsedAttack.Special) UsePotion();
+                if (UsedAttack.Type == AttackType.special) UsePotion();
                 UsedAttack.AttackEvent(attacked, UsedAttack, this);
             }
             catch (Exception)
@@ -66,9 +71,10 @@ namespace RGR___Dungeon
         {
             foreach (Attack attack in attacks)
             {
-                if (!attack.Special)
+                if (attack.Type !=AttackType.special)
                 {
                     attack.Damage = attack.BaseDamage + currentWeapon.Damage + strength * 6;
+                    attack.SuccessChance = attack.BaseChance + agility * 2;
                     attack.Type = currentWeapon.AttackType;
                 }
             }
@@ -133,9 +139,10 @@ namespace RGR___Dungeon
             try
             {
                 Console.Clear();
-                Console.WriteLine(string.Format("Вы нашли {0}. Защита: {1}, Устойчивость: {2}, Уязвимость: {3}",
+                Console.WriteLine(string.Format("Вы нашли {0}. Защита: {1}, Штраф к улонению {2}, Устойчивость: {3}, Уязвимость: {4}",
                                                 armor.ArmorName,
                                                 armor.durability,
+                                                armor.AgilityPenalty,
                                                 armor.Resistance,
                                                 armor.Weakness));
                 if (currentArmor.GetType() == typeof(NoArmor))
@@ -144,9 +151,10 @@ namespace RGR___Dungeon
                 }
                 else
                 {
-                    Console.WriteLine(string.Format("\nВаша броня:{0}. Защита: {1}, Устойчивость: {2}, Уязвимость: {3}",
+                    Console.WriteLine(string.Format("\nВаша броня:{0}. Защита: {1}, Штраф к уклонению {2} ,Устойчивость: {3}, Уязвимость: {4}",
                                                 currentArmor.ArmorName,
                                                 currentArmor.durability,
+                                                currentArmor.AgilityPenalty,
                                                 currentArmor.Resistance,
                                                 currentArmor.Weakness));
                 }
@@ -189,27 +197,48 @@ namespace RGR___Dungeon
                 try
                 {
                     Console.WriteLine("Новый уровень! \n"
-                                      + "Выберите характеристику для улучшения: 1 - Здоровье, 2 - Сила");
-                    int i = int.Parse(Console.ReadLine());
+                                      + "очки характеристик + 2");
+                    statPoints += 2;
                     expirience -= expToNextLevel;
                     level += 1;
                     expToNextLevel += 15 * level;
-                    switch (i)
+                    while (statPoints > 0)
                     {
-                        case 1:
-                            maxhealth += 25;
-                            Health += 25;
-                            break;
-                        case 2:
-                            strength += 1;
-                            RegenerateAttacks();
-                            break;
-                        default:
-                            maxhealth += 25;
-                            Health += 25;
-                            break;
+                        Console.WriteLine("\nВыберите характеристику для прокачки:"
+                                          + "\n 1 - Здоровье +25"
+                                          + "\n 2 - Сила +1"
+                                          + "\n 3 - Ловкость +1");
+                        int i = int.Parse(Console.ReadLine());
+                        switch (i)
+                        {
+                            case 1:
+                                maxhealth += 25;
+                                Health += 25;
+                                statPoints -= 1;
+                                break;
+                            case 2:
+                                strength += 1;
+                                RegenerateAttacks();
+                                statPoints -= 1;
+                                break;
+                            case 3:
+                                if (agility < 10)
+                                {
+                                    agility += 1;
+                                    RegenerateAttacks();
+                                    statPoints -= 1;
+                                }
+                                else
+                                    Console.WriteLine("Вы достигли предела человеческих возможностей."
+                                                      + "\n вы не можете иметь ловкость выше 10.");
+                                break;
+                            default:
+                                maxhealth += 25;
+                                Health += 25;
+                                statPoints -= 1;
+                                break;
+                        }
                     }
-
                 }
                 catch (Exception)
                 {
@@ -219,12 +248,21 @@ namespace RGR___Dungeon
         }
         protected override void TakeDamage(int dmg, Attack attack)
         {
-            if (currentArmor.durability - dmg > 0)
-                DamageArmor(dmg);
+
+            if (random.Next(101) + currentArmor.AgilityPenalty >= agility * 3)
+            {
+                if (currentArmor.durability - dmg > 0)
+                    DamageArmor(dmg);
+                else
+                {
+                    Health -= (dmg - currentArmor.durability);
+                    DamageArmor(dmg);
+                }
+            }
             else
             {
-                Health -= (dmg - currentArmor.durability);
-                DamageArmor(dmg);
+                Console.WriteLine("Вы смогли увернуться от атаки противника");
+                Console.ReadKey();
             }
         }
         public void UsePotion()

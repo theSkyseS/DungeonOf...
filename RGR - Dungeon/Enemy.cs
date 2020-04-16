@@ -22,7 +22,7 @@ namespace RGR___Dungeon
         public override void InflictAttack(Character attacked)
         {
             Attack UsedAttack = attacks[rnd.Next(0, attacks.Count)];
-            if (UsedAttack.Special) Heal(13 + 5*Player.difficulty);
+            if (UsedAttack.Type == AttackType.special) Heal(13 + 5*Player.difficulty);
             UsedAttack.AttackEvent(attacked, UsedAttack, this);
         }
         #endregion
@@ -41,8 +41,8 @@ namespace RGR___Dungeon
             weaknessType = AttackType.physical;
             resistance = AttackType.poison;
 
-            attacks.Add(new Attack(3 + 2 * Player.difficulty, 80, false, "Укус", defaultAttackType));
-            attacks.Add(new Attack(8 + 4 * Player.difficulty, 50, false, "Сильный укус", defaultAttackType));
+            attacks.Add(new Attack(3 + 2 * Player.difficulty, 80, "Укус", defaultAttackType));
+            attacks.Add(new Attack(8 + 4 * Player.difficulty, 50, "Сильный укус", defaultAttackType));
             weakSpots.Add("удар по голове");
         }
     }
@@ -58,9 +58,9 @@ namespace RGR___Dungeon
             weaknessType = AttackType.poison;
             resistance = AttackType.physical;
 
-            attacks.Add(new Attack(17 + 9 * Player.difficulty, 90, false, "Удар", defaultAttackType));
-            attacks.Add(new Attack(0, 100, true, "Исцеление", AttackType.special));
-            attacks.Add(new Attack(20 + 10 * Player.difficulty, 75, false, "Сильный удар", defaultAttackType));
+            attacks.Add(new Attack(17 + 9 * Player.difficulty, 90, "Удар", defaultAttackType));
+            attacks.Add(new Attack(0, 100, "Исцеление", AttackType.special));
+            attacks.Add(new Attack(20 + 10 * Player.difficulty, 75, "Сильный удар", defaultAttackType));
             weakSpots.Add("удар по голове");
             weakSpots.Add("удар по рукам");
         }
@@ -77,8 +77,8 @@ namespace RGR___Dungeon
             weaknessType = AttackType.physical;
             resistance = AttackType.poison;
 
-            attacks.Add(new Attack(8 + 6 * Player.difficulty, 95, false, "Плевок слизью", defaultAttackType));
-            attacks.Add(new Attack(13 + 8 * Player.difficulty, 80, false, "Удар", defaultAttackType));
+            attacks.Add(new Attack(8 + 6 * Player.difficulty, 95, "Плевок слизью", defaultAttackType));
+            attacks.Add(new Attack(13 + 8 * Player.difficulty, 80, "Удар", defaultAttackType));
             weakSpots.Add("удар по торсу");
         }
     }
@@ -94,9 +94,9 @@ namespace RGR___Dungeon
             weaknessType = AttackType.magic;
             resistance = AttackType.ranged;
 
-            attacks.Add(new Attack(17 + 8 * Player.difficulty, 80, true, "Поглощение жизни", defaultAttackType));
-            attacks.Add(new Attack(24 + 12 * Player.difficulty , 70, false, "Крик", defaultAttackType));
-            attacks.Add(new Attack(3 * Player.difficulty, 100, false, "Удар", AttackType.physical));
+            attacks.Add(new Attack(17 + 8 * Player.difficulty, 80, "Поглощение жизни", AttackType.special));
+            attacks.Add(new Attack(24 + 12 * Player.difficulty , 70, "Крик", defaultAttackType));
+            attacks.Add(new Attack(3 * Player.difficulty, 99, "Удар", AttackType.physical));
             weakSpots.Add("удар по торсу");
         }
     }
@@ -112,9 +112,9 @@ namespace RGR___Dungeon
             weaknessType = AttackType.poison;
             resistance = AttackType.ranged;
 
-            attacks.Add(new Attack(10 + 5 * Player.difficulty, 75, false, "Выстрел", defaultAttackType));
-            attacks.Add(new Attack(20 + 10 * Player.difficulty, 60, false, "Заряженный выстрел", defaultAttackType));
-            attacks.Add(new Attack(5 + 4 * Player.difficulty, 90, false, "Удар луком", AttackType.physical));
+            attacks.Add(new Attack(10 + 5 * Player.difficulty, 75, "Выстрел", defaultAttackType));
+            attacks.Add(new Attack(20 + 10 * Player.difficulty, 60, "Заряженный выстрел", defaultAttackType));
+            attacks.Add(new Attack(5 + 4 * Player.difficulty, 90, "Удар луком", AttackType.physical));
             weakSpots.Add("удар по рукам");
             weakSpots.Add("удар по ногам");
         }
@@ -132,9 +132,9 @@ namespace RGR___Dungeon
             weaknessType = AttackType.magic;
             resistance = AttackType.poison;
 
-            attacks.Add(new Attack(6 + 4 * Player.difficulty, 90, false, "Удар", defaultAttackType));
-            attacks.Add(new Attack(15 + 8 * Player.difficulty, 50, false, "Укус", defaultAttackType));
-            attacks.Add(new Attack(2 * Player.difficulty, 95, false, "Слабый удар", defaultAttackType));
+            attacks.Add(new Attack(6 + 4 * Player.difficulty, 90, "Удар", defaultAttackType));
+            attacks.Add(new Attack(15 + 8 * Player.difficulty, 50, "Укус", defaultAttackType));
+            attacks.Add(new Attack(2 * Player.difficulty, 95, "Слабый удар", defaultAttackType));
             weakSpots.Add("удар по рукам");
             weakSpots.Add("удар по ногам");
         }
@@ -151,9 +151,9 @@ namespace RGR___Dungeon
             weaknessType = AttackType.ranged;
             resistance = AttackType.magic;
 
-            attacks.Add(new Attack(30 + 10 * Player.difficulty, 80, false, "Огненный шар", defaultAttackType));
-            attacks.Add(new Attack(20 + 8 * Player.difficulty, 90, false, "Удар молнии", defaultAttackType));
-            attacks.Add(new Attack(0, 99, true, "Исцеление", AttackType.special));
+            attacks.Add(new Attack(30 + 10 * Player.difficulty, 80, "Огненный шар", defaultAttackType));
+            attacks.Add(new Attack(20 + 8 * Player.difficulty, 90, "Удар молнии", defaultAttackType));
+            attacks.Add(new Attack(0, 99, "Исцеление", AttackType.special));
             weakSpots.Add("удар по голове");
         }
     }
