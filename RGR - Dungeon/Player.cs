@@ -1,4 +1,5 @@
 ﻿using System;
+using static RGR___Dungeon.AttackType;
 
 namespace RGR___Dungeon
 {
@@ -27,11 +28,11 @@ namespace RGR___Dungeon
         public Player()
         {
             name = "Игрок";
-            attacks.Add(new Attack(25, 75, "удар по торсу", AttackType.physical));
-            attacks.Add(new Attack(30, 45, "удар по голове", AttackType.physical));
-            attacks.Add(new Attack(18, 85, "удар по рукам", AttackType.physical));
-            attacks.Add(new Attack(15, 95, "удар по ногам", AttackType.physical));
-            attacks.Add(new Attack(0, 100, "лечение", AttackType.special));
+            attacks.Add(new Attack(25, 75, "удар по торсу", physical));
+            attacks.Add(new Attack(30, 45, "удар по голове", physical));
+            attacks.Add(new Attack(18, 85, "удар по рукам", physical));
+            attacks.Add(new Attack(15, 95, "удар по ногам", physical));
+            attacks.Add(new Attack(0, 100, "лечение", special));
             level = 1;
             maxhealth = 100;
             Health = 100;
@@ -44,8 +45,8 @@ namespace RGR___Dungeon
             expToNextLevel = 10;
             currentWeapon = new NoWeapon();
             currentArmor = new NoArmor();
-            resistance = AttackType.nothing;
-            weaknessType = AttackType.nothing;
+            resistance = nothing;
+            weaknessType = nothing;
         }
 
         #region methods
@@ -57,7 +58,7 @@ namespace RGR___Dungeon
             {
                 int i = int.Parse(Console.ReadLine());
                 Attack UsedAttack = attacks[i - 1];
-                if (UsedAttack.Type == AttackType.special) UsePotion();
+                if (UsedAttack.Type == special) UsePotion();
                 UsedAttack.AttackEvent(attacked, UsedAttack, this);
             }
             catch (Exception)
@@ -71,7 +72,7 @@ namespace RGR___Dungeon
         {
             foreach (Attack attack in attacks)
             {
-                if (attack.Type !=AttackType.special)
+                if (attack.Type !=special)
                 {
                     attack.Damage = attack.BaseDamage + currentWeapon.Damage + strength * 6;
                     attack.SuccessChance = attack.BaseChance + agility * 2;
@@ -185,8 +186,8 @@ namespace RGR___Dungeon
                 {
                     Console.WriteLine("Ваша броня сломалась, Вам стоит поискать себе другую");
                     currentArmor = new NoArmor();
-                    resistance = AttackType.nothing;
-                    weaknessType = AttackType.nothing;
+                    resistance = nothing;
+                    weaknessType = nothing;
                 }
             }
         }
@@ -196,6 +197,7 @@ namespace RGR___Dungeon
             while (expirience >= expToNextLevel)
                 try
                 {
+                    Console.Clear();
                     Console.WriteLine("Новый уровень! \n"
                                       + "очки характеристик + 2");
                     statPoints += 2;
@@ -269,7 +271,7 @@ namespace RGR___Dungeon
         {
             if (healthPotions > 0)
             {
-                int heal = 10 * level;
+                int heal = 10 * difficulty;
                 this.healthPotions -= 1;
                 Heal(heal);
                 Console.WriteLine($"Вы выпили зелье. Здоровье +{heal}");

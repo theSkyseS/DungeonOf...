@@ -38,38 +38,48 @@ namespace RGR___Dungeon
             public int BaseChance => baseChance;
             #endregion
 
-            public void AttackEvent(Character attacked, Attack attack, Character attacker)
+            public bool AttackEvent(Character attacked, Attack attack, Character attacker)
             {
+                bool success;
                 int dmg = Damage;
                 int i = rnd.Next(1, 100);
-                if (i <= SuccessChance && attack.type != AttackType.special)
+                if (i <= SuccessChance)
                 {
                     Console.WriteLine(string.Format("{0} успешно использовал приём {1}", attacker.name, attack.Name));
-                    if (attacked.weakSpots.Contains(attack.Name))
+                    success = true;
+                    if (attack.type != AttackType.special)
                     {
-                        dmg = (int)(dmg * 1.5);
-                        Console.WriteLine("Вы попали в уязвимое место!");
-                    }
-                    if (attack.Type == attacked.weaknessType)
-                    {
-                        dmg = (int)(dmg * 1.5);
-                        Console.WriteLine($"{attacked.name} уязвим к данному типу урона.");
-                    }
-                    else if (attack.Type == attacked.resistance)
-                    {
-                        dmg = (int)(dmg / 1.5);
-                        Console.WriteLine($"{attacked.name} устойчив к данному типу урона.");
-                    }
-                    if (rnd.Next(1, 101) < 10)
-                    {
-                        dmg *= 2;
-                        Console.WriteLine("Крит!");
+                        if (attacked.weakSpots.Contains(attack.Name))
+                        {
+                            dmg = (int)(dmg * 1.5);
+                            Console.WriteLine("Вы попали в уязвимое место!");
+                        }
+                        if (attack.Type == attacked.weaknessType)
+                        {
+                            dmg = (int)(dmg * 1.5);
+                            Console.WriteLine($"{attacked.name} уязвим к данному типу урона.");
+                        }
+                        else if (attack.Type == attacked.resistance)
+                        {
+                            dmg = (int)(dmg / 1.5);
+                            Console.WriteLine($"{attacked.name} устойчив к данному типу урона.");
+                        }
+                        if (rnd.Next(1, 101) < 10)
+                        {
+                            dmg *= 2;
+                            Console.WriteLine("Крит!");
 
+                        }
+                        Console.WriteLine($"Урон: {dmg}");
+                        attacked.TakeDamage(dmg, attack);
                     }
-                    Console.WriteLine($"Урон: {dmg}");
-                    attacked.TakeDamage(dmg, attack);
                 }
-                else Console.WriteLine(string.Format("У {1} не вышло использовать {0}", attack.Name, attacker.name));
+                else
+                {
+                    Console.WriteLine(string.Format("У {1} не вышло использовать {0}", attack.Name, attacker.name));
+                    success = false;
+                }
+                return success;
             }
         }
 
