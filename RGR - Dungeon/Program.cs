@@ -126,7 +126,7 @@ namespace RGR___Dungeon
                     player.expirience += enemy.Exp;
                     if (rnd.Next(101) < 30)
                     {
-                        player.TakeNewWeapon(GenerateWeapon());
+                        player.TakeNewWeapon(new RandomWeapon());
                     }
                     if (rnd.Next(101) < 25)
                     {
@@ -139,7 +139,7 @@ namespace RGR___Dungeon
             {
                 if (rnd.Next(101) < 15)
                 {
-                    player.TakeNewWeapon(GenerateWeapon());
+                    player.TakeNewWeapon(new RandomWeapon());
                 }
                 if (rnd.Next(101) < 15)
                 {
@@ -192,24 +192,6 @@ namespace RGR___Dungeon
             }
         }
 
-        static Weapon GenerateWeapon()
-        {
-            switch (rnd.Next(1,6))
-            {
-                case 1:
-                    return new Shortsword();
-                case 2:
-                    return new Sword();
-                case 3:
-                    return new Longbow();
-                case 4:
-                    return new Magicstaff();
-                case 5:
-                    return new Acidstaff();
-                default:
-                    return new Shortsword();
-            }
-        }
         static Armor GenerateArmor()
         {
             switch (rnd.Next(1, 5))
@@ -233,7 +215,7 @@ namespace RGR___Dungeon
             return money;
         }
 
-        static Random rnd = new Random();
+        public static Random rnd = new Random();
         #endregion
 
         #region Save Load System
