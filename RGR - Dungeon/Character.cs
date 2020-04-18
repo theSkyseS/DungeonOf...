@@ -71,7 +71,7 @@ namespace RGR___Dungeon
 
                         }
                         Console.WriteLine($"Урон: {dmg}");
-                        attacked.TakeDamage(dmg, attack);
+                        attacked.TakeDamage(dmg);
                     }
                 }
                 else
@@ -109,11 +109,13 @@ namespace RGR___Dungeon
                 }
             }
         }
+        public AttackType WeaknessType => weaknessType;
+        public AttackType Resistance => resistance;
         #endregion
 
         #region Methods
         public void Heal(int value) => Health += value;
-        protected abstract void TakeDamage(int dmg, Attack attack);
+        public abstract void TakeDamage(int dmg);
         public abstract void InflictAttack(Character attacked);
         #endregion
     }

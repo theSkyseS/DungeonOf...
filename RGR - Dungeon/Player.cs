@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using static RGR___Dungeon.AttackType;
 
 namespace RGR___Dungeon
@@ -16,15 +17,19 @@ namespace RGR___Dungeon
         private int level;
         private int statPoints;
         private int agility;
+        private int intelligence;
+        private int skillPoints;
         private Weapon currentWeapon;
-        public Armor currentArmor;
-        Random random = new Random();
+        private Armor currentArmor;
+        private List<Skill> passiveSkills = new List<Skill>();
+        private List<ActiveSkill> activeSkills = new List<ActiveSkill>();
+        private List<ActiveSkill> activeSkillList = new List<ActiveSkill>();
         #endregion
 
         #region Properties
         public int Level => level;
+        public Armor CurrentArmor => currentArmor;
         #endregion
-
         public Player()
         {
             name = "Игрок";
@@ -33,6 +38,14 @@ namespace RGR___Dungeon
             attacks.Add(new Attack(18, 85, "удар по рукам", physical));
             attacks.Add(new Attack(15, 95, "удар по ногам", physical));
             attacks.Add(new Attack(0, 100, "лечение", special));
+
+            activeSkillList.Add(new FireBall());
+            activeSkillList.Add(new Meteor());
+            activeSkillList.Add(new CriticalStrike());
+            activeSkillList.Add(new LethalBlow());
+            activeSkillList.Add(new KnifeThrow());
+            activeSkillList.Add(new GhostArrow());
+
             level = 1;
             maxhealth = 100;
             Health = 100;
@@ -41,8 +54,10 @@ namespace RGR___Dungeon
             expirience = 0;
             strength = 0;
             agility = 0;
+            intelligence = 0;
             statPoints = 0;
-            expToNextLevel = 10;
+            skillPoints = 0;
+            expToNextLevel = 20;
             currentWeapon = new NoWeapon();
             currentArmor = new NoArmor();
             resistance = nothing;
@@ -53,13 +68,77 @@ namespace RGR___Dungeon
         #region attack
         public override void InflictAttack(Character attacked)
         {
-            Console.WriteLine("Введите номер атаки: 1-торс, 2-голова, 3-руки, 4-ноги, 5-использовать зелье");
+            Console.Clear();
+            Console.WriteLine(string.Format("Здоровье: {0}, Броня: {3}, Монеты: {1}, Зелья здоровья: {2}",
+                                            Health,
+                                            score,
+                                            healthPotions,
+                                            CurrentArmor.durability));
+            Console.WriteLine(string.Format("Враг: {0}, Здоровье врага: {1}",
+                                            attacked.name,
+                                            attacked.Health));
+            Console.WriteLine("Выберите действие:\n "
+                              + "1 - ударить по торсу,\n "
+                              + "2 - ударить по голове,\n "
+                              + "3 - ударить по рукам,\n "
+                              + "4 - ударить по ногам,\n "
+                              + "5 - использовать зелье,\n "
+                              + "6 - использовать навык ");
             try
             {
                 int i = int.Parse(Console.ReadLine());
-                Attack UsedAttack = attacks[i - 1];
-                if (UsedAttack.Type == special) UsePotion();
-                UsedAttack.AttackEvent(attacked, UsedAttack, this);
+                if (i == 6)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Выберите навык для использования:");
+                    if (activeSkills.Count == 0)
+                    {
+                        Console.WriteLine("У вас нет навыков.");
+                        Console.ReadKey();
+                        InflictAttack(attacked);
+                    }
+                    else
+                    {
+                        foreach(ActiveSkill skill in activeSkills)
+                        {
+                            Console.WriteLine(string.Format(" {0} - {1}. Урон: {2}, До перезарядки: {3}, Время перезарядки: {4}",
+                                                            activeSkills.IndexOf(skill) + 1,
+                                                            skill.SkillName,
+                                                            skill.Damage,
+                                                            skill.Cooldown,
+                                                            skill.CooldownTime));
+                        }
+                        int j = int.Parse(Console.ReadLine());
+                        if (j > activeSkills.Count)
+                        {
+                            InflictAttack(attacked);
+                        }
+                        else
+                        {
+                            if (activeSkills[j - 1].Cooldown == 0)
+                            {
+                                activeSkills[j - 1].UseSkill(attacked);
+                                activeSkills[j - 1].Cooldown += 1;
+                                CooldownTick();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Навык на перезарядке.");
+                                Console.ReadKey();
+                                InflictAttack(attacked);
+                            }
+                        }
+                        
+                    }
+
+                }
+                else
+                {
+                    Attack UsedAttack = attacks[i - 1];
+                    if (UsedAttack.Type == special) UsePotion();
+                    UsedAttack.AttackEvent(attacked, UsedAttack, this);
+                    CooldownTick();
+                }
             }
             catch (Exception)
             {
@@ -74,7 +153,7 @@ namespace RGR___Dungeon
             {
                 if (attack.Type !=special)
                 {
-                    attack.Damage = attack.BaseDamage + currentWeapon.Damage + strength * 6;
+                    attack.Damage = attack.BaseDamage + currentWeapon.Damage + strength * 5;
                     attack.SuccessChance = attack.BaseChance + agility * 2;
                     attack.Type = currentWeapon.AttackType;
                 }
@@ -110,10 +189,10 @@ namespace RGR___Dungeon
                 {
                     Console.Clear();
                     currentWeapon = weapon;
-                    Console.WriteLine(String.Format("Вы взяли {0}", weapon.WeaponName));
+                    Console.WriteLine(string.Format("Вы взяли {0}", weapon.WeaponName));
                     RegenerateAttacks();
                 }
-                else if (choice == 2) Console.WriteLine(String.Format("Вы оставили {0}", currentWeapon.WeaponName));
+                else if (choice == 2) Console.WriteLine(string.Format("Вы оставили {0}", currentWeapon.WeaponName));
             }
             catch (Exception)
             {
@@ -192,63 +271,224 @@ namespace RGR___Dungeon
             }
         }
         #endregion
+        #region skills
+        private void SkillsMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("Ваши текущие навыки: \n");
+            foreach (ActiveSkill skill in activeSkills)
+            {
+                Console.WriteLine(string.Format(" {0} - {1}. Урон: {2}, Время перезарядки: {3}, Очков для улучшения: {4}",
+                                                            activeSkills.IndexOf(skill) + 1,
+                                                            skill.SkillName,
+                                                            skill.Damage,
+                                                            skill.CooldownTime,
+                                                            skill.PointsToLearn));
+            }
+            Console.ReadKey();
+            while (skillPoints > 0)
+            {
+                Console.Clear();
+                Console.WriteLine($"У вас есть неиспользованные очки навыков: {skillPoints}");
+                Console.WriteLine("Выберите:\n 1 - Изучить новый навык\n 2 - Улучшить один из имеющихся навыков\n 3 - Выйти из меню навыков");
+                try
+                {
+                    switch (Console.ReadLine())
+                    {
+                        case "1":
+                            {
+                                Console.WriteLine("Навыки, доступные для изучения: ");
+                                foreach (ActiveSkill activeSkill in activeSkillList)
+                                    Console.WriteLine(string.Format(" {0} - {1}. Урон: {2}, Время перезарядки: {3}, Очков для изучения: {4}",
+                                                            activeSkillList.IndexOf(activeSkill) + 1,
+                                                            activeSkill.SkillName,
+                                                            activeSkill.Damage,
+                                                            activeSkill.CooldownTime,
+                                                            activeSkill.PointsToLearn));
+                                int i = int.Parse(Console.ReadLine());
+                                ActiveSkill learningSkill = activeSkillList[i - 1];
+                                if(learningSkill.PointsToLearn <= skillPoints)
+                                {
+                                    skillPoints -= learningSkill.PointsToLearn;
+                                    activeSkills.Add(learningSkill);
+                                    activeSkillList.Remove(learningSkill);
+                                    RegenerateSkills();
+                                    Console.WriteLine($"Вы изучили навык: {learningSkill.SkillName}");
+                                    Console.ReadKey();
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Недостаточно очков навыков для изучения.");
+                                    Console.ReadKey();
+                                    break;
+                                }
+                                
+                            }
+                            break;
+                        case "2":
+                            {
+                                Console.WriteLine("Навыки, доступные для улучшения: ");
+                                foreach (ActiveSkill activeSkill in activeSkills)
+                                    Console.WriteLine(string.Format(" {0} - {1}. Урон: {2}, Откат: {3}, Уровень: {4}, Очков для улучшения: {5}",
+                                                            activeSkills.IndexOf(activeSkill) + 1,
+                                                            activeSkill.SkillName,
+                                                            activeSkill.Damage,
+                                                            activeSkill.CooldownTime,
+                                                            activeSkill.level,
+                                                            activeSkill.PointsToLearn)); 
+                                int i = int.Parse(Console.ReadLine());
+                                ActiveSkill learningSkill = activeSkills[i - 1];
+                                if (learningSkill.PointsToLearn < skillPoints)
+                                {
+                                    skillPoints -= learningSkill.PointsToLearn;
+                                    learningSkill.level += 1;
+                                    RegenerateSkills();
+                                    Console.WriteLine($"Вы улучшили навык: {learningSkill.SkillName}");
+                                    Console.ReadKey();
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Недостаточно очков навыков для улчучшения.");
+                                    Console.ReadKey();
+                                    break;
+                                }
+                            }
+                            break;
+                        case "3": return;
+                        default:
+                            Console.WriteLine("Введите корректное значение.");
+                            Console.ReadKey();
+                            break;
+                    }
+                }
+                catch(Exception)
+                {
+                    Console.WriteLine("Введите корректное значение.");
+                    Console.ReadKey();
+                }
+                
+            }
+
+        }
+        private void RegenerateSkills()
+        {
+            foreach (ActiveSkill activeSkill in activeSkills)
+            {
+                switch(activeSkill.AttackType)
+                {
+                    case magic: activeSkill.Damage = activeSkill.BaseDamage + activeSkill.level * 6 + intelligence * 8; break;
+                    case physical: activeSkill.Damage = activeSkill.BaseDamage + activeSkill.level * 5 + strength * 6; break;
+                    case ranged: activeSkill.Damage = activeSkill.BaseDamage + activeSkill.level * 4 + agility * 4; break;
+                }
+            }
+        }
+        private void CooldownTick()
+        {
+            foreach (ActiveSkill activeSkill in activeSkills)
+                activeSkill.Cooldown -= 1;
+        }
+        #endregion
+
+        #region level
         public void CheckLevelUp()
         {
             while (expirience >= expToNextLevel)
-                try
-                {
-                    Console.Clear();
-                    Console.WriteLine("Новый уровень! \n"
-                                      + "очки характеристик + 2");
-                    statPoints += 2;
-                    expirience -= expToNextLevel;
-                    level += 1;
-                    expToNextLevel += 15 * level;
-                    while (statPoints > 0)
-                    {
-                        Console.WriteLine("\nВыберите характеристику для прокачки:"
-                                          + "\n 1 - Здоровье +25"
-                                          + "\n 2 - Сила +1"
-                                          + "\n 3 - Ловкость +1");
-                        int i = int.Parse(Console.ReadLine());
-                        switch (i)
-                        {
-                            case 1:
-                                maxhealth += 25;
-                                Health += 25;
-                                statPoints -= 1;
-                                break;
-                            case 2:
-                                strength += 1;
-                                RegenerateAttacks();
-                                statPoints -= 1;
-                                break;
-                            case 3:
-                                if (agility < 10)
-                                {
-                                    agility += 1;
-                                    RegenerateAttacks();
-                                    statPoints -= 1;
-                                }
-                                else
-                                    Console.WriteLine("Вы достигли предела человеческих возможностей."
-                                                      + "\n вы не можете иметь ловкость выше 10.");
-                                break;
-                            default:
-                                maxhealth += 25;
-                                Health += 25;
-                                statPoints -= 1;
-                                break;
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    //Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
-                    CheckLevelUp();
-                }
+            {
+                Console.Clear();
+                Console.WriteLine("Новый уровень! \n"
+                                  + "Очки характеристик + 3\n" 
+                                  + "Очки навыков +1");
+                Console.ReadKey();
+                statPoints += 3;
+                skillPoints += 1;
+                expirience -= expToNextLevel;
+                level += 1;
+                expToNextLevel += 15 * level;
+            }
+
         }
-        protected override void TakeDamage(int dmg, Attack attack)
+        public void SkillsOrStats()
+        {
+            Console.Clear();
+            Console.WriteLine("Выберите действие: \n 1 - Меню навыков \n 2 - Меню характеристик");
+            switch (Console.ReadLine())
+            {
+                case "1": SkillsMenu(); break;
+                case "2": StatsMenu(); break;
+                default:
+                    Console.WriteLine("Введите корректное значение.");
+                    SkillsOrStats();
+                    break;
+            }
+        }
+        private void StatsMenu()
+        {
+            Console.Clear();
+            Console.WriteLine(string.Format("Ваши характеристики: "
+                                            + "\n Здоровье: {0}, "
+                                            + "\n Сила: {1}, "
+                                            + "\n Ловкость: {2}, "
+                                            + "\n Интеллект: {3}",
+                                            maxhealth, strength, agility, intelligence));
+            Console.ReadKey();
+            while (statPoints > 0)
+            {
+                Console.Clear();
+                Console.WriteLine(string.Format("Ваши характеристики: "
+                                            + "\n Здоровье: {0}, "
+                                            + "\n Сила: {1}, "
+                                            + "\n Ловкость: {2}, "
+                                            + "\n Интеллект: {3}",
+                                            maxhealth, strength, agility, intelligence));
+                Console.WriteLine($"\nУ вас есть {statPoints} очков характеристик"
+                                  + "\nВыберите характеристику для прокачки:"
+                                  + "\n 1 - Здоровье +25"
+                                  + "\n 2 - Сила +1"
+                                  + "\n 3 - Ловкость +1"
+                                  + "\n 4 - Интеллект +1");;
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        maxhealth += 25;
+                        Health += 25;
+                        statPoints -= 1;
+                        break;
+                    case "2":
+                        strength += 1;
+                        RegenerateAttacks();
+                        RegenerateSkills();
+                        statPoints -= 1;
+                        break;
+                    case "3":
+                        if (agility < 10)
+                        {
+                            agility += 1;
+                            RegenerateAttacks();
+                            RegenerateSkills();
+                            statPoints -= 1;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Вы достигли предела человеческих возможностей."
+                                              + "\n вы не можете иметь ловкость выше 10.");
+                            Console.ReadKey();
+                        }
+                        break;
+                    case "4":
+                        intelligence += 1;
+                        statPoints -= 1;
+                        RegenerateAttacks();
+                        RegenerateSkills();
+                        break;
+                    default:
+                        Console.WriteLine("Неккоректный ввод");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+        }
+        #endregion
+        public override void TakeDamage(int dmg)
         {
 
             if (random.Next(101) + currentArmor.AgilityPenalty >= agility * 3)

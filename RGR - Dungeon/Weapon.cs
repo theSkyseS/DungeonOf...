@@ -87,7 +87,7 @@ namespace RGR___Dungeon
     {
         public RandomWeapon()
         {
-            switch(Program.rnd.Next(5))
+            switch(random.Next(5))
             {
                 case 0: weaponName = "короткий меч"; attackType = physical; break;
                 case 1: weaponName = "меч"; attackType = physical; break;
@@ -95,8 +95,8 @@ namespace RGR___Dungeon
                 case 3: weaponName = "магический посох"; attackType = magic; break;
                 case 4: weaponName = "посох яда"; attackType = poison; break;
             }
-            damage = Program.rnd.Next(6 + 3 * Player.difficulty, 12 + 6 * Player.difficulty);
-            durability = Program.rnd.Next(10, 30);
+            damage = random.Next(6 + 3 * Player.difficulty, 12 + 6 * Player.difficulty);
+            durability = random.Next(10, 30);
         }
     }
 }

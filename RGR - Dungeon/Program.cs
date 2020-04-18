@@ -66,21 +66,23 @@ namespace RGR___Dungeon
                                                 player.score,
                                                 player.healthPotions,
                                                 player.expirience,
-                                                player.currentArmor.durability));
+                                                player.CurrentArmor.durability));
                 bool door = GenerateDoor();
                 Console.WriteLine("Введите число: \n "
                                   + "1 или 2 - выбрать дверь \n "
                                   + "3 - использовать зелье \n "
-                                  + "4 - сохранение(перезапишет старое) \n "
-                                  + "5 - выход в меню");
+                                  + "4 - меню персонажа \n "
+                                  + "5 - сохранение(перезапишет старое) \n "
+                                  + "6 - выход в меню ");
                 string selectedDoor = Console.ReadLine();
                 switch (selectedDoor)
                 {
                     case "1": Round(door, player, score); break;
                     case "2": Round(!door, player, score); break;
                     case "3": player.UsePotion(); Console.ReadKey(); break;
-                    case "4": SaveGame(player); break;
-                    case "5":score.SaveScore(); return;
+                    case "4": player.SkillsOrStats(); break;
+                    case "5": SaveGame(player); break;
+                    case "6":score.SaveScore(); return;
                     default: Console.WriteLine("Неккоректный ввод"); break;
                 }
             } while (player.Health > 0);
@@ -95,15 +97,6 @@ namespace RGR___Dungeon
                 Console.ReadKey();
                 while (player.Health > 0 && enemy.Health > 0)
                 {
-                    Console.Clear();
-                    Console.WriteLine(string.Format("Здоровье: {0}, Броня: {3}, Монеты: {1}, Зелья здоровья: {2}",
-                                                    player.Health,
-                                                    player.score,
-                                                    player.healthPotions,
-                                                    player.currentArmor.durability));
-                    Console.WriteLine(string.Format("Враг: {0}, Здоровье врага: {1}",
-                                                    enemy.name,
-                                                    enemy.Health));
                     player.InflictAttack(enemy);
                     player.DamageWeapon();
                     enemy.InflictAttack(player);

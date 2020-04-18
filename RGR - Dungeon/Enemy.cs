@@ -10,19 +10,18 @@ namespace RGR___Dungeon
         
         protected int exp;
         protected AttackType defaultAttackType;
-        static Random rnd = new Random();
 
         public int Exp => exp;
         #endregion
 
         #region Methods
-        protected override void TakeDamage(int dmg, Attack attack)
+        public override void TakeDamage(int dmg)
         {
             Health -= dmg;
         }
         public override void InflictAttack(Character attacked)
         {
-            Attack UsedAttack = attacks[rnd.Next(0, attacks.Count)];
+            Attack UsedAttack = attacks[random.Next(0, attacks.Count)];
             if (UsedAttack.AttackEvent(attacked, UsedAttack, this))
             {
                 if (UsedAttack.Type == special) 

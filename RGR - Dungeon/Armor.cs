@@ -3,7 +3,7 @@
 namespace RGR___Dungeon
 {
     [Serializable]
-    abstract class Armor
+    abstract class Armor : Entity
     {
         public int durability;
         protected AttackType resistance;
