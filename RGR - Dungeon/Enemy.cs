@@ -15,7 +15,7 @@ namespace RGR___Dungeon
         #endregion
 
         #region Methods
-        public override void TakeDamage(int dmg)
+        public override void TakeDamage(int dmg, AttackType attackType)
         {
             Health -= dmg;
         }

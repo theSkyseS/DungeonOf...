@@ -11,7 +11,7 @@ namespace RGR___Dungeon
         public static int difficulty = 1;
         public int score;
         public int healthPotions;
-        public int expirience;
+        private int expirience;
         private int strength;
         private int expToNextLevel;
         private int level;
@@ -21,14 +21,14 @@ namespace RGR___Dungeon
         private int skillPoints;
         private Weapon currentWeapon;
         private Armor currentArmor;
-        private List<Skill> passiveSkills = new List<Skill>();
-        private List<ActiveSkill> activeSkills = new List<ActiveSkill>();
-        private List<ActiveSkill> activeSkillList = new List<ActiveSkill>();
+        private List<Skill> Skills = new List<Skill>();
+        private List<Skill> SkillList = new List<Skill>();
         #endregion
 
         #region Properties
         public int Level => level;
         public Armor CurrentArmor => currentArmor;
+        public int Expirience => expirience;
         #endregion
         public Player()
         {
@@ -39,12 +39,18 @@ namespace RGR___Dungeon
             attacks.Add(new Attack(15, 95, "удар по ногам", physical));
             attacks.Add(new Attack(0, 100, "лечение", special));
 
-            activeSkillList.Add(new FireBall());
-            activeSkillList.Add(new Meteor());
-            activeSkillList.Add(new CriticalStrike());
-            activeSkillList.Add(new LethalBlow());
-            activeSkillList.Add(new KnifeThrow());
-            activeSkillList.Add(new GhostArrow());
+            SkillList.Add(new MagicArmor());
+            SkillList.Add(new FireBall());
+            SkillList.Add(new Meteor());
+            SkillList.Add(new CriticalStrike());
+            SkillList.Add(new LethalBlow());
+            SkillList.Add(new KnifeThrow());
+            SkillList.Add(new GhostArrow());
+
+            SkillList.Add(new StoneSkin());
+            SkillList.Add(new GoodStudent());
+            SkillList.Add(new Dodge());
+            SkillList.Add(new MagicNullify());
 
             level = 1;
             maxhealth = 100;
@@ -91,7 +97,7 @@ namespace RGR___Dungeon
                 {
                     Console.Clear();
                     Console.WriteLine("Выберите навык для использования:");
-                    if (activeSkills.Count == 0)
+                    if (Skills.Count == 0)
                     {
                         Console.WriteLine("У вас нет навыков.");
                         Console.ReadKey();
@@ -99,36 +105,29 @@ namespace RGR___Dungeon
                     }
                     else
                     {
-                        foreach(ActiveSkill skill in activeSkills)
+                        foreach(ActiveSkill skill in Skills)
                         {
                             Console.WriteLine(string.Format(" {0} - {1}. Урон: {2}, До перезарядки: {3}, Время перезарядки: {4}",
-                                                            activeSkills.IndexOf(skill) + 1,
-                                                            skill.SkillName,
+                                                            Skills.IndexOf(skill) + 1,
+                                                            skill.Name,
                                                             skill.Damage,
                                                             skill.Cooldown,
                                                             skill.CooldownTime));
                         }
                         int j = int.Parse(Console.ReadLine());
-                        if (j > activeSkills.Count)
+                        ActiveSkill activeSkill = (ActiveSkill) Skills[j - 1];
+                        if (activeSkill.Cooldown == 0)
                         {
-                            InflictAttack(attacked);
+                            activeSkill.UseSkill(attacked, this);
+                            activeSkill.Cooldown += 1;
+                            CooldownTick();
                         }
                         else
                         {
-                            if (activeSkills[j - 1].Cooldown == 0)
-                            {
-                                activeSkills[j - 1].UseSkill(attacked);
-                                activeSkills[j - 1].Cooldown += 1;
-                                CooldownTick();
-                            }
-                            else
-                            {
-                                Console.WriteLine("Навык на перезарядке.");
-                                Console.ReadKey();
-                                InflictAttack(attacked);
-                            }
+                            Console.WriteLine("Навык на перезарядке.");
+                            Console.ReadKey();
+                            InflictAttack(attacked);
                         }
-                        
                     }
 
                 }
@@ -140,8 +139,10 @@ namespace RGR___Dungeon
                     CooldownTick();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
+
                 Console.WriteLine("Введите корректное значение");
                 InflictAttack(attacked);
             }
@@ -151,10 +152,27 @@ namespace RGR___Dungeon
         {
             foreach (Attack attack in attacks)
             {
-                if (attack.Type !=special)
+                if (attack.Type != special)
                 {
-                    attack.Damage = attack.BaseDamage + currentWeapon.Damage + strength * 5;
-                    attack.SuccessChance = attack.BaseChance + agility * 2;
+                    switch (currentWeapon.AttackType)
+                    {
+                        case physical: 
+                        case nothing:
+                            attack.Damage = attack.BaseDamage + currentWeapon.Damage + strength * 5;
+                            attack.SuccessChance = attack.BaseChance + agility * 2;
+                            break;
+                        case ranged:
+                            attack.Damage = attack.BaseDamage + currentWeapon.Damage + agility * 5;
+                            attack.SuccessChance = attack.BaseChance + agility * 3;
+                            break;
+                        case magic:
+                            attack.Damage = attack.BaseDamage + currentWeapon.Damage + intelligence * 5;
+                            attack.SuccessChance = attack.BaseChance + agility * 1;
+                            break;
+                        default:
+                            attack.Damage = attack.BaseDamage + currentWeapon.Damage;
+                            break;
+                    }
                     attack.Type = currentWeapon.AttackType;
                 }
             }
@@ -276,14 +294,24 @@ namespace RGR___Dungeon
         {
             Console.Clear();
             Console.WriteLine("Ваши текущие навыки: \n");
-            foreach (ActiveSkill skill in activeSkills)
+            foreach (ActiveSkill skill in Skills.FindAll(x => x.GetType() == typeof(ActiveSkill)))
             {
-                Console.WriteLine(string.Format(" {0} - {1}. Урон: {2}, Время перезарядки: {3}, Очков для улучшения: {4}",
-                                                            activeSkills.IndexOf(skill) + 1,
-                                                            skill.SkillName,
-                                                            skill.Damage,
-                                                            skill.CooldownTime,
-                                                            skill.PointsToLearn));
+                Console.WriteLine(string.Format(" {0} - {1}. Урон: {2}, Уровень {3}, Время перезарядки: {4}, Очков для улучшения: {5}",
+                                                Skills.IndexOf(skill) + 1,
+                                                skill.Name,
+                                                skill.Damage,
+                                                skill.level,
+                                                skill.CooldownTime,
+                                                skill.PointsToLearn));
+            }
+            foreach (PassiveSkill passiveSkill in Skills.FindAll(x => x.GetType() == typeof(PassiveSkill)))
+            {
+                Console.WriteLine(string.Format(" {0} - {1}. Уровень: {2}, \n  Описание: {3}, Очков для улучшения: {4}",
+                                                Skills.IndexOf(passiveSkill) + 1,
+                                                passiveSkill.Name,
+                                                passiveSkill.level,
+                                                passiveSkill.Description,
+                                                passiveSkill.PointsToLearn));
             }
             Console.ReadKey();
             while (skillPoints > 0)
@@ -297,72 +325,81 @@ namespace RGR___Dungeon
                     {
                         case "1":
                             {
-                                Console.WriteLine("Навыки, доступные для изучения: ");
-                                foreach (ActiveSkill activeSkill in activeSkillList)
-                                    Console.WriteLine(string.Format(" {0} - {1}. Урон: {2}, Время перезарядки: {3}, Очков для изучения: {4}",
-                                                            activeSkillList.IndexOf(activeSkill) + 1,
-                                                            activeSkill.SkillName,
-                                                            activeSkill.Damage,
-                                                            activeSkill.CooldownTime,
-                                                            activeSkill.PointsToLearn));
+                                Console.WriteLine("Навыки, доступные для изучения:");
+                                Console.WriteLine(" Активные навыки:");
+                                foreach (ActiveSkill skill in SkillList.FindAll(x => x.GetType() == typeof(ActiveSkill)))
+                                    Console.WriteLine(string.Format(" {0} - {1}. Урон: {2}, Время перезарядки: {3}, Очков для улучшения: {4}",
+                                                                    SkillList.IndexOf(skill) + 1,
+                                                                    skill.Name,
+                                                                    skill.Damage,
+                                                                    skill.CooldownTime,
+                                                                    skill.PointsToLearn));
+                                Console.WriteLine(" Пассивные навыки:");
+                                foreach (PassiveSkill skill in SkillList.FindAll(x=> x.GetType() == typeof(PassiveSkill)))
+                                    Console.WriteLine(string.Format(" {0} - {1}. Описание: {2}, Очков для улучшения: {3}",
+                                                                    SkillList.IndexOf(skill) + 1,
+                                                                    skill.Name,
+                                                                    skill.Description,
+                                                                    skill.PointsToLearn));
                                 int i = int.Parse(Console.ReadLine());
-                                ActiveSkill learningSkill = activeSkillList[i - 1];
+                                if (i > SkillList.Count + 1) break;
+                                Skill learningSkill = SkillList[i - 1];
                                 if(learningSkill.PointsToLearn <= skillPoints)
                                 {
+                                    learningSkill.level += 1;
+                                    SkillList.Remove(learningSkill);
+                                    Skills.Add(learningSkill);
                                     skillPoints -= learningSkill.PointsToLearn;
-                                    activeSkills.Add(learningSkill);
-                                    activeSkillList.Remove(learningSkill);
                                     RegenerateSkills();
-                                    Console.WriteLine($"Вы изучили навык: {learningSkill.SkillName}");
-                                    Console.ReadKey();
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Недостаточно очков навыков для изучения.");
+                                    Console.WriteLine("Вы накопили недостаточно знаний для изучения этого навыка");
                                     Console.ReadKey();
-                                    break;
                                 }
-                                
                             }
                             break;
                         case "2":
                             {
-                                Console.WriteLine("Навыки, доступные для улучшения: ");
-                                foreach (ActiveSkill activeSkill in activeSkills)
-                                    Console.WriteLine(string.Format(" {0} - {1}. Урон: {2}, Откат: {3}, Уровень: {4}, Очков для улучшения: {5}",
-                                                            activeSkills.IndexOf(activeSkill) + 1,
-                                                            activeSkill.SkillName,
-                                                            activeSkill.Damage,
-                                                            activeSkill.CooldownTime,
-                                                            activeSkill.level,
-                                                            activeSkill.PointsToLearn)); 
+                                Console.WriteLine("Навыки, доступные для улучшения:");
+                                foreach (ActiveSkill skill in Skills.FindAll(x => x.GetType() == typeof(ActiveSkill)))
+                                    Console.WriteLine(string.Format(" {0} - {1}. Урон: {2}, Уровень {3}, Время перезарядки: {4}, Очков для улучшения: {5}",
+                                                                    Skills.IndexOf(skill) + 1,
+                                                                    skill.Name,
+                                                                    skill.Damage,
+                                                                    skill.level,
+                                                                    skill.CooldownTime,
+                                                                    skill.PointsToLearn));
+                                foreach (PassiveSkill skill in Skills.FindAll(x => x.GetType() == typeof(PassiveSkill)))
+                                    Console.WriteLine(string.Format(" {0} - {1}. Уровень: {2}, \n  Описание: {3}, Очков для улучшения: {4}",
+                                                                    Skills.IndexOf(skill) + 1,
+                                                                    skill.Name,
+                                                                    skill.level,
+                                                                    skill.Description,
+                                                                    skill.PointsToLearn));
                                 int i = int.Parse(Console.ReadLine());
-                                ActiveSkill learningSkill = activeSkills[i - 1];
-                                if (learningSkill.PointsToLearn < skillPoints)
+                                if (i > Skills.Count + 1) break;
+                                Skill learningSkill = Skills[i - 1];
+                                if (learningSkill.PointsToLearn <= skillPoints)
                                 {
-                                    skillPoints -= learningSkill.PointsToLearn;
                                     learningSkill.level += 1;
+                                    skillPoints -= learningSkill.PointsToLearn;
                                     RegenerateSkills();
-                                    Console.WriteLine($"Вы улучшили навык: {learningSkill.SkillName}");
-                                    Console.ReadKey();
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Недостаточно очков навыков для улчучшения.");
+                                    Console.WriteLine("Вы накопили недостаточно знаний для изучения этого навыка");
                                     Console.ReadKey();
-                                    break;
                                 }
                             }
                             break;
                         case "3": return;
-                        default:
-                            Console.WriteLine("Введите корректное значение.");
-                            Console.ReadKey();
-                            break;
                     }
                 }
-                catch(Exception)
+                catch(Exception e)
                 {
+                    Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
+
                     Console.WriteLine("Введите корректное значение.");
                     Console.ReadKey();
                 }
@@ -372,7 +409,7 @@ namespace RGR___Dungeon
         }
         private void RegenerateSkills()
         {
-            foreach (ActiveSkill activeSkill in activeSkills)
+            foreach (ActiveSkill activeSkill in Skills)
             {
                 switch(activeSkill.AttackType)
                 {
@@ -384,11 +421,10 @@ namespace RGR___Dungeon
         }
         private void CooldownTick()
         {
-            foreach (ActiveSkill activeSkill in activeSkills)
+            foreach (ActiveSkill activeSkill in Skills.FindAll(x => x.GetType() == typeof(ActiveSkill)))
                 activeSkill.Cooldown -= 1;
         }
         #endregion
-
         #region level
         public void CheckLevelUp()
         {
@@ -406,6 +442,15 @@ namespace RGR___Dungeon
                 expToNextLevel += 15 * level;
             }
 
+        }
+        public void TakeExpririence(int exp)
+        {
+            if (Skills.Contains(new GoodStudent()))
+            {
+                int skillLevel = Skills[Skills.IndexOf(new GoodStudent())].level;
+                exp += exp * (skillLevel);
+            }
+            expirience += exp;
         }
         public void SkillsOrStats()
         {
@@ -488,10 +533,34 @@ namespace RGR___Dungeon
             }
         }
         #endregion
-        public override void TakeDamage(int dmg)
+        public override void TakeDamage(int dmg, AttackType attackType)
         {
-
-            if (random.Next(101) + currentArmor.AgilityPenalty >= agility * 3)
+            
+            if (Skills.Exists(x => x.Name == "Каменная кожа") && (attackType == physical || attackType == ranged))
+            {
+                Skill findSkill = Skills.Find(x => x.Name == "Каменная кожа");
+                dmg -= 5 * findSkill.level;
+            }
+            if (Skills.Exists(x => x.Name == "Невосприимчивость к магии") && attackType == magic)
+            {
+                Skill findSkill = Skills.Find(x => x.Name == "Невосприимчивость к магии");
+                dmg -= 5 * findSkill.level;
+            }
+            if (Skills.Exists(x => x.Name == "Уклонение"))
+            {
+                Skill findSkill = Skills.Find(x => x.Name == "Уклонение");
+                if (random.Next(101) + currentArmor.AgilityPenalty >= agility * 3 + findSkill.level * 10)
+                {
+                    if (currentArmor.durability - dmg > 0)
+                        DamageArmor(dmg);
+                    else
+                    {
+                        Health -= (dmg - currentArmor.durability);
+                        DamageArmor(dmg);
+                    }
+                }
+            }
+            else if (random.Next(101) + currentArmor.AgilityPenalty >= agility * 3)
             {
                 if (currentArmor.durability - dmg > 0)
                     DamageArmor(dmg);

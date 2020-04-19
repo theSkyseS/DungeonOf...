@@ -71,7 +71,7 @@ namespace RGR___Dungeon
 
                         }
                         Console.WriteLine($"Урон: {dmg}");
-                        attacked.TakeDamage(dmg);
+                        attacked.TakeDamage(dmg, attack.type);
                     }
                 }
                 else
@@ -115,7 +115,7 @@ namespace RGR___Dungeon
 
         #region Methods
         public void Heal(int value) => Health += value;
-        public abstract void TakeDamage(int dmg);
+        public abstract void TakeDamage(int dmg, AttackType attackType);
         public abstract void InflictAttack(Character attacked);
         #endregion
     }

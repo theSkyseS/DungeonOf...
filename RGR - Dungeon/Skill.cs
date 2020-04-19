@@ -10,16 +10,21 @@ namespace RGR___Dungeon
     [Serializable]
     abstract class Skill
     {
+        abstract public new Type GetType();
         public int level;
-        protected string skillName;
+        protected string name;
         protected int pointsToLearn;
 
         public int PointsToLearn => pointsToLearn;
-        public string SkillName => skillName;
+        public string Name => name;
     }
     [Serializable]
     abstract class ActiveSkill : Skill
     {
+        public override Type GetType()
+        {
+            return typeof(ActiveSkill);
+        }
         protected int baseDamage;
         protected int damage;
         protected int cooldownTime;
@@ -31,7 +36,7 @@ namespace RGR___Dungeon
             get => cooldown; 
             set
             {
-                if (cooldown - value <= 0) cooldown = 0;
+                if (value <= 0) cooldown = 0;
                 else cooldown = value;
             }
         }
@@ -40,10 +45,10 @@ namespace RGR___Dungeon
         public int BaseDamage => baseDamage;
         public AttackType AttackType => attackType;
 
-        public void UseSkill(Character attacked)
+        public virtual void UseSkill(Character attacked, Player player)
         {
-            Console.WriteLine(string.Format("Вы использовали {0} на {1}",
-                                             skillName, attacked.name));
+            Console.WriteLine(string.Format("{2} использовали {0} на {1}",
+                                             name, attacked.name, player.name));
             int dmg = damage;
             if (AttackType == attacked.WeaknessType)
             {
@@ -56,8 +61,28 @@ namespace RGR___Dungeon
                 Console.WriteLine($"{attacked.name} устойчив к данному типу урона.");
             }
             Console.WriteLine($"Урон: {dmg}");
-            attacked.TakeDamage(dmg);
-            cooldown = cooldownTime;
+            attacked.TakeDamage(dmg, attackType);
+            Cooldown = cooldownTime;
+        }
+    }
+    [Serializable]
+    class MagicArmor : ActiveSkill
+    {
+        public MagicArmor()
+        {
+            name = "Магическая броня";
+            baseDamage = 0;
+            damage = baseDamage;
+            cooldownTime = 3;
+            level = 0;
+            pointsToLearn = 2;
+            attackType = special;
+        }
+        public override void UseSkill(Character attacked , Player player)
+        {
+            Console.WriteLine($"Вы использовали {name}");
+            player.CurrentArmor.durability += 20;
+            Cooldown = CooldownTime;
         }
     }
     [Serializable]
@@ -65,7 +90,7 @@ namespace RGR___Dungeon
     {
         public FireBall()
         {
-            skillName = "Огненный шар";
+            name = "Огненный шар";
             baseDamage = 35;
             damage = baseDamage;
             cooldownTime = 4;
@@ -79,7 +104,7 @@ namespace RGR___Dungeon
     {
         public Meteor()
         {
-            skillName = "Метеор";
+            name = "Метеор";
             baseDamage = 60;
             damage = baseDamage;
             cooldownTime = 8;
@@ -93,7 +118,7 @@ namespace RGR___Dungeon
     {
         public CriticalStrike()
         {
-            skillName = "Точный удар";
+            name = "Точный удар";
             baseDamage = 30;
             damage = baseDamage;
             cooldownTime = 3;
@@ -107,7 +132,7 @@ namespace RGR___Dungeon
     {
         public LethalBlow()
         {
-            skillName = "Cмертельный удар";
+            name = "Cмертельный удар";
             baseDamage = 45;
             damage = baseDamage;
             cooldownTime = 5;
@@ -121,7 +146,7 @@ namespace RGR___Dungeon
     {
         public KnifeThrow()
         {
-            skillName = "Бросок ножа";
+            name = "Бросок ножа";
             baseDamage = 20;
             damage = baseDamage;
             cooldownTime = 1;
@@ -135,7 +160,7 @@ namespace RGR___Dungeon
     {
         public GhostArrow()
         {
-            skillName = "Призрачная стрела";
+            name = "Призрачная стрела";
             baseDamage = 25;
             damage = baseDamage;
             cooldownTime = 2;
@@ -144,4 +169,60 @@ namespace RGR___Dungeon
             attackType = ranged;
         }
     }
+    [Serializable]
+    abstract class PassiveSkill : Skill
+    {
+        protected string description;
+        public override Type GetType()
+        {
+            return typeof(PassiveSkill);
+        }
+
+        public string Description => description;
+    }
+    [Serializable]
+    class StoneSkin : PassiveSkill
+    {
+        public StoneSkin()
+        {
+            name = "Каменная кожа";
+            description = "Уменьшает получаемый Вами урон от физических атак на 5 едениц за уровень";
+            level = 0;
+            pointsToLearn = 2;
+        }
+    }
+    [Serializable]
+    class GoodStudent : PassiveSkill
+    {
+        public GoodStudent()
+        {
+            name = "Прилежный ученик";
+            description = "Увеличивает количество получаемого опыта за убийство монстров";
+            level = 0;
+            pointsToLearn = 6;
+        }
+    }
+    [Serializable]
+    class Dodge : PassiveSkill
+    {
+        public Dodge()
+        {
+            name = "Уклонение";
+            description = "Увеличивает шанс увернутся от атаки противника на 10%";
+            level = 0;
+            pointsToLearn = 8;
+        }
+    }
+    [Serializable]
+    class MagicNullify : PassiveSkill
+    {
+        public MagicNullify()
+        {
+            name = "Невосприимчивость к магии";
+            description = "Уменьшает получаемый Вами урон от магических атак на 5 едениц за уровень";
+            level = 0;
+            pointsToLearn = 2;
+        }
+    }
+
 }

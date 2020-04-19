@@ -8,9 +8,7 @@ namespace RGR___Dungeon
 {
     [Serializable]
     abstract class Entity
-    {
-        //TODO: texture, position, ?        
+    {      
         protected static Random random = new Random();
-
     }
 }

@@ -44,9 +44,9 @@ namespace RGR___Dungeon
                 }
                 GameMethod();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-               //Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
+                Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
                 Console.WriteLine("Некорректный ввод");
                 Console.ReadKey();
                 GameMethod();
@@ -65,7 +65,7 @@ namespace RGR___Dungeon
                                                 player.Health,
                                                 player.score,
                                                 player.healthPotions,
-                                                player.expirience,
+                                                player.Expirience,
                                                 player.CurrentArmor.durability));
                 bool door = GenerateDoor();
                 Console.WriteLine("Введите число: \n "
@@ -116,7 +116,7 @@ namespace RGR___Dungeon
                                                     enemy.Exp));
                     Console.WriteLine();
                     Console.WriteLine(string.Format("Вы нашли {0} монет.", GenerateGold(player)));
-                    player.expirience += enemy.Exp;
+                    player.TakeExpririence(enemy.Exp);
                     if (rnd.Next(101) < 30)
                     {
                         player.TakeNewWeapon(new RandomWeapon());
@@ -144,10 +144,9 @@ namespace RGR___Dungeon
                 Console.ReadKey();
             }
         }
-
         static void DifficultyChange(Player player)
         {
-            if (player.Level >= 3 * Player.difficulty)
+            if (player.Level > 3 * Player.difficulty)
             {
                 Player.difficulty += 1;
                 Console.Clear();
