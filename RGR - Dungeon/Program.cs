@@ -46,7 +46,6 @@ namespace RGR___Dungeon
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message + "\n" + e.StackTrace + "\n" + e.Source + "\n" + e.InnerException);
                 Console.WriteLine("Некорректный ввод");
                 Console.ReadKey();
                 GameMethod();
