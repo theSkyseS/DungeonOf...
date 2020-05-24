@@ -580,12 +580,12 @@ namespace RGR___Dungeon
             {
                 int heal = 10 * difficulty;
                 this.healthPotions -= 1;
-                Heal(heal);
+                Health += heal;
                 Console.WriteLine($"Вы выпили зелье. Здоровье +{heal}");
             }
             else Console.WriteLine("У Вас нет зелий");
         }
-        public void TakePotions(int value) => this.healthPotions += value;
+        public void TakePotions(int value) => healthPotions += value;
         #endregion
     }
 }

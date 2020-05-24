@@ -10,7 +10,6 @@ namespace RGR___Dungeon
         
         protected int exp;
         protected AttackType defaultAttackType;
-
         public int Exp => exp;
         #endregion
 
@@ -25,7 +24,7 @@ namespace RGR___Dungeon
             if (UsedAttack.AttackEvent(attacked, UsedAttack, this))
             {
                 if (UsedAttack.Type == special) 
-                    Heal(13 + 5 * Player.difficulty);
+                    Health += (13 + 5 * Player.difficulty);
             }
         }
         #endregion

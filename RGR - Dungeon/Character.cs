@@ -24,11 +24,6 @@ namespace RGR___Dungeon
                 damage = dmg; SuccessChance = chance; name = Name;
                 type = Type; baseDamage = dmg; baseChance = SuccessChance;
             }
-            public Attack(int dmg, int chance, string Name)
-            {
-                damage = dmg; SuccessChance = chance; name = Name;
-                type = AttackType.physical; baseDamage = dmg; baseChance = SuccessChance;
-            }
             #region propeties
             public int BaseDamage => baseDamage;
             public string Name => name;
@@ -114,7 +109,6 @@ namespace RGR___Dungeon
         #endregion
 
         #region Methods
-        public void Heal(int value) => Health += value;
         public abstract void TakeDamage(int dmg, AttackType attackType);
         public abstract void InflictAttack(Character attacked);
         #endregion
